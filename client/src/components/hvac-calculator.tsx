@@ -280,7 +280,7 @@ export default function HVACCalculator() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="cfm" 
-                  label={{ value: 'CFM', position: 'insideBottom', offset: -5 }}
+                  label={{ value: 'CFM', position: 'insideBottom', offset: -15 }}
                   domain={[0, 55100]}
                 />
                 <YAxis 
