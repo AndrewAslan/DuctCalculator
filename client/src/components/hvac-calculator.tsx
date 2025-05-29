@@ -284,7 +284,7 @@ export default function HVACCalculator() {
                   domain={[0, 55100]}
                 />
                 <YAxis 
-                  label={{ value: 'Duct dia. in inches', angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'Duct dia. in inches', angle: -90, position: 'outside', offset: 10 }}
                   domain={[0, 60]}
                 />
                 <Tooltip 
