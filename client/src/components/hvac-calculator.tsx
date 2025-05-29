@@ -70,21 +70,53 @@ export default function HVACCalculator() {
 
   // Generate chart data for all CFM values using current velocity and friction
   const generateChartData = () => {
-    const chartData: Array<{cfm: number, velocityBased: number, frictionBased: number}> = [];
-    const sampleCfmValues = cfmOptions.filter((_, index) => index % 4 === 0); // Sample every 4th value for better chart readability
+    const chartData: Array<{
+      cfm: number, 
+      velocityBased: number, 
+      frictionBased: number,
+      isCurrentPoint?: boolean,
+      currentVelocity?: number,
+      currentFriction?: number
+    }> = [];
+    
+    // Sample every 8th value for better chart readability across full range
+    const sampleCfmValues = cfmOptions.filter((_, index) => index % 8 === 0);
     
     sampleCfmValues.forEach(cfm => {
-      if (cfm <= 8000) { // Limit chart to reasonable CFM range for visibility
-        const velocityDiameter = calculateDiameterFromVelocity(inputs.velocity, cfm);
-        const frictionDiameter = calculateDiameterFromFriction(inputs.friction, cfm);
-        
-        chartData.push({
-          cfm,
-          velocityBased: velocityDiameter,
-          frictionBased: frictionDiameter
-        });
-      }
+      const velocityDiameter = calculateDiameterFromVelocity(inputs.velocity, cfm);
+      const frictionDiameter = calculateDiameterFromFriction(inputs.friction, cfm);
+      
+      // Check if this is the current selected CFM point
+      const isCurrentPoint = cfm === inputs.cfm;
+      
+      chartData.push({
+        cfm,
+        velocityBased: velocityDiameter,
+        frictionBased: frictionDiameter,
+        isCurrentPoint,
+        currentVelocity: isCurrentPoint ? inputs.velocity : undefined,
+        currentFriction: isCurrentPoint ? inputs.friction : undefined
+      });
     });
+    
+    // Ensure the current CFM point is included even if not in sample
+    const currentCfmInChart = chartData.find(point => point.cfm === inputs.cfm);
+    if (!currentCfmInChart) {
+      const velocityDiameter = calculateDiameterFromVelocity(inputs.velocity, inputs.cfm);
+      const frictionDiameter = calculateDiameterFromFriction(inputs.friction, inputs.cfm);
+      
+      chartData.push({
+        cfm: inputs.cfm,
+        velocityBased: velocityDiameter,
+        frictionBased: frictionDiameter,
+        isCurrentPoint: true,
+        currentVelocity: inputs.velocity,
+        currentFriction: inputs.friction
+      });
+      
+      // Sort by CFM to maintain order
+      chartData.sort((a, b) => a.cfm - b.cfm);
+    }
     
     return chartData;
   };
@@ -281,13 +313,24 @@ export default function HVACCalculator() {
                 />
                 <YAxis 
                   label={{ value: 'Duct dia. in inches', angle: -90, position: 'insideLeft' }}
-                  domain={[0, 30]}
+                  domain={[0, 60]}
                 />
                 <Tooltip 
-                  formatter={(value: any, name: any) => [
-                    `${value}"`, 
-                    name === 'velocityBased' ? 'Velocity based duct diameter (inches)' : 'Friction based duct diameter (inches)'
-                  ]}
+                  formatter={(value: any, name: any, props: any) => {
+                    const point = props.payload;
+                    if (point?.isCurrentPoint) {
+                      return [
+                        `${value}" (Current Selection)`,
+                        name === 'velocityBased' 
+                          ? `Velocity: ${point.currentVelocity} ft/min` 
+                          : `Friction: ${point.currentFriction} in./100ft`
+                      ];
+                    }
+                    return [
+                      `${value}"`, 
+                      name === 'velocityBased' ? 'Velocity based diameter' : 'Friction based diameter'
+                    ];
+                  }}
                   labelFormatter={(label: any) => `CFM: ${label}`}
                 />
                 <Legend 
@@ -304,20 +347,58 @@ export default function HVACCalculator() {
                   dataKey="velocityBased" 
                   stroke="#3b82f6" 
                   strokeWidth={2}
-                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
+                  dot={(props: any) => {
+                    const { payload } = props;
+                    return payload?.isCurrentPoint ? (
+                      <circle 
+                        cx={props.cx} 
+                        cy={props.cy} 
+                        r={6} 
+                        fill="#1d4ed8" 
+                        stroke="#ffffff" 
+                        strokeWidth={3}
+                      />
+                    ) : (
+                      <circle 
+                        cx={props.cx} 
+                        cy={props.cy} 
+                        r={2} 
+                        fill="#3b82f6" 
+                      />
+                    );
+                  }}
                 />
                 <Line 
                   type="monotone" 
                   dataKey="frictionBased" 
                   stroke="#f97316" 
                   strokeWidth={2}
-                  dot={{ fill: '#f97316', strokeWidth: 2, r: 3 }}
+                  dot={(props: any) => {
+                    const { payload } = props;
+                    return payload?.isCurrentPoint ? (
+                      <circle 
+                        cx={props.cx} 
+                        cy={props.cy} 
+                        r={6} 
+                        fill="#c2410c" 
+                        stroke="#ffffff" 
+                        strokeWidth={3}
+                      />
+                    ) : (
+                      <circle 
+                        cx={props.cx} 
+                        cy={props.cy} 
+                        r={2} 
+                        fill="#f97316" 
+                      />
+                    );
+                  }}
                 />
               </LineChart>
             </ResponsiveContainer>
           </div>
           <p className="text-xs text-gray-500 mt-4 text-center">
-            Chart shows diameter calculations for CFM range up to 8,000 using current velocity ({inputs.velocity} ft/min) and friction ({inputs.friction} in./100ft) values
+            Chart shows diameter calculations for full CFM range using current velocity ({inputs.velocity} ft/min) and friction ({inputs.friction} in./100ft) values. Highlighted points show your current selection.
           </p>
         </CardContent>
       </Card>
