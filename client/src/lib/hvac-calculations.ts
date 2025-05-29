@@ -46,17 +46,14 @@ export function calculateDiameterFromVelocity(velocity: number, cfm: number): nu
 
 /**
  * Calculate duct diameter based on friction loss and CFM
- * Using corrected Excel formula: EVEN(((constant*CFM*1.9)/friction)^(1/5.02))
+ * Using exact Excel formula: EVEN((((0.109136*CFM^1.9)/friction))^(1/5.02))
  * Result rounded up to nearest even number (2-inch increments) between 2-60 inches
  */
 export function calculateDiameterFromFriction(friction: number, cfm: number): number {
   if (friction <= 0 || cfm <= 0) return 0;
   
-  // Corrected constant to match Excel results (derived from working backwards)
-  const constant = 29.84;
-  
-  // Excel formula: ((constant*CFM*1.9)/friction)^(1/5.02)
-  const diameter = Math.pow((constant * cfm * 1.9) / friction, 1/5.02);
+  // Exact Excel formula: ((0.109136*CFM^1.9)/friction)^(1/5.02)
+  const diameter = Math.pow((0.109136 * Math.pow(cfm, 1.9)) / friction, 1/5.02);
   
   // Excel EVEN function: round up to nearest even number
   const roundedDiameter = Math.ceil(diameter / 2) * 2;
