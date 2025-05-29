@@ -55,16 +55,16 @@ export default function HVACCalculator() {
         isValid = value >= 0.01 && value <= 1.0;
         break;
       case 'cfm':
-        isValid = value >= 100 && value <= 100000;
+        isValid = value >= 100 && value <= 51000;
         break;
     }
     
     return `pr-16 ${isValid ? 'border-green-500' : value > 0 ? 'border-red-500' : ''}`;
   };
 
-  // Generate CFM options: 100, 600, 1100, 1600, etc. up to 100000
+  // Generate CFM options: 100, 600, 1100, 1600, etc. up to 51000
   const cfmOptions: number[] = [];
-  for (let cfm = 100; cfm <= 100000; cfm += 500) {
+  for (let cfm = 100; cfm <= 51000; cfm += 500) {
     cfmOptions.push(cfm);
   }
 
@@ -192,7 +192,7 @@ export default function HVACCalculator() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-gray-500">Select from 100 to 100,000 CFM (100, 600, 1100, 1600...)</p>
+              <p className="text-xs text-gray-500">Select from 100 to 51,000 CFM (100, 600, 1100, 1600...)</p>
             </div>
 
             {/* Errors */}
@@ -310,6 +310,7 @@ export default function HVACCalculator() {
                 <XAxis 
                   dataKey="cfm" 
                   label={{ value: 'CFM', position: 'insideBottom', offset: -5 }}
+                  domain={[0, 55100]}
                 />
                 <YAxis 
                   label={{ value: 'Duct dia. in inches', angle: -90, position: 'insideLeft' }}
