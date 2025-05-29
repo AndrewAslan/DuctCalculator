@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator, Wind, Ruler, AlertCircle, Info, BarChart3 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { 
   HVACInputs, 
   HVACResults, 
@@ -30,7 +31,8 @@ export default function HVACCalculator() {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
-  const calculateResults = () => {
+  // Auto-calculate results when inputs change
+  useEffect(() => {
     const validationErrors = validateHVACInputs(inputs);
     setErrors(validationErrors);
     
@@ -40,7 +42,7 @@ export default function HVACCalculator() {
     } else {
       setResults(null);
     }
-  };
+  }, [inputs]);
 
   const getInputBorderClass = (field: keyof HVACInputs, value: number) => {
     let isValid = false;
@@ -65,6 +67,29 @@ export default function HVACCalculator() {
   for (let cfm = 100; cfm <= 100000; cfm += 500) {
     cfmOptions.push(cfm);
   }
+
+  // Generate chart data for all CFM values using current velocity and friction
+  const generateChartData = () => {
+    const chartData: Array<{cfm: number, velocityBased: number, frictionBased: number}> = [];
+    const sampleCfmValues = cfmOptions.filter((_, index) => index % 4 === 0); // Sample every 4th value for better chart readability
+    
+    sampleCfmValues.forEach(cfm => {
+      if (cfm <= 8000) { // Limit chart to reasonable CFM range for visibility
+        const velocityDiameter = calculateDiameterFromVelocity(inputs.velocity, cfm);
+        const frictionDiameter = calculateDiameterFromFriction(inputs.friction, cfm);
+        
+        chartData.push({
+          cfm,
+          velocityBased: velocityDiameter,
+          frictionBased: frictionDiameter
+        });
+      }
+    });
+    
+    return chartData;
+  };
+
+  const chartData = generateChartData();
 
   return (
     <div className="space-y-8">
@@ -152,14 +177,13 @@ export default function HVACCalculator() {
               </Alert>
             )}
 
-            {/* Calculate Button */}
-            <Button 
-              onClick={calculateResults}
-              className="w-full bg-primary hover:bg-blue-700 text-white"
-            >
-              <Calculator className="mr-2 h-4 w-4" />
-              Calculate Results
-            </Button>
+            {/* Auto-calculation info */}
+            <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+              <p className="text-sm text-blue-700 flex items-center">
+                <Calculator className="mr-2 h-4 w-4" />
+                Results update automatically as you change inputs
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -238,18 +262,63 @@ export default function HVACCalculator() {
         </div>
       </div>
 
-      {/* Chart Section - Coming Soon */}
+      {/* Chart Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-3">
             <BarChart3 className="text-purple-600 h-5 w-5" />
-            <span>Round Duct Size Comparison Chart</span>
+            <span>Round Duct Size Comparison</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-80 w-full flex items-center justify-center bg-gray-50 rounded-lg">
-            <p className="text-gray-500">Chart will be added shortly to show diameter comparisons across CFM range</p>
+          <div className="h-80 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis 
+                  dataKey="cfm" 
+                  label={{ value: 'CFM', position: 'insideBottom', offset: -5 }}
+                />
+                <YAxis 
+                  label={{ value: 'Duct dia. in inches', angle: -90, position: 'insideLeft' }}
+                  domain={[0, 30]}
+                />
+                <Tooltip 
+                  formatter={(value: any, name: any) => [
+                    `${value}"`, 
+                    name === 'velocityBased' ? 'Velocity based duct diameter (inches)' : 'Friction based duct diameter (inches)'
+                  ]}
+                  labelFormatter={(label: any) => `CFM: ${label}`}
+                />
+                <Legend 
+                  verticalAlign="bottom"
+                  height={36}
+                  formatter={(value: any) => 
+                    value === 'velocityBased' 
+                      ? 'Velocity based duct diameter (inches)' 
+                      : 'Friction based duct diameter (inches)'
+                  }
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="velocityBased" 
+                  stroke="#3b82f6" 
+                  strokeWidth={2}
+                  dot={{ fill: '#3b82f6', strokeWidth: 2, r: 3 }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="frictionBased" 
+                  stroke="#f97316" 
+                  strokeWidth={2}
+                  dot={{ fill: '#f97316', strokeWidth: 2, r: 3 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
+          <p className="text-xs text-gray-500 mt-4 text-center">
+            Chart shows diameter calculations for CFM range up to 8,000 using current velocity ({inputs.velocity} ft/min) and friction ({inputs.friction} in./100ft) values
+          </p>
         </CardContent>
       </Card>
     </div>
