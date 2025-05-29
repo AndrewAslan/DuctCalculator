@@ -52,8 +52,8 @@ export function calculateDiameterFromVelocity(velocity: number, cfm: number): nu
 export function calculateDiameterFromFriction(friction: number, cfm: number): number {
   if (friction <= 0 || cfm <= 0) return 0;
   
-  // Excel formula: ((0.109136*CFM*1.9)/friction)^(1/5.02)
-  const diameter = Math.pow((0.109136 * cfm * 1.9) / friction, 1/5.02);
+  // Excel formula: ((CFM*4.5)/(0.109136*friction))^(1/5.02)
+  const diameter = Math.pow((cfm * 4.5) / (0.109136 * friction), 1/5.02);
   
   // Round up to next even number (2-inch increments)
   // If already even, go to next even number; if odd, round up to next even
