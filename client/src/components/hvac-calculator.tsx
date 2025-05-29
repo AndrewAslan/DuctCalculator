@@ -276,13 +276,12 @@ export default function HVACCalculator() {
         <CardContent>
           <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 25 }}>
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis 
                   dataKey="cfm" 
-                  label={{ value: 'CFM', position: 'insideBottom', offset: -25 }}
+                  label={{ value: 'CFM', position: 'insideBottom', offset: -15 }}
                   domain={[0, 55100]}
-                  tick={{ dy: 10 }}
                 />
                 <YAxis 
                   label={{ value: 'Duct Diameter (inches)', angle: -90, position: 'insideLeft', offset: -5, style: { textAnchor: 'middle' } }}
