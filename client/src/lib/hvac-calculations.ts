@@ -1,6 +1,7 @@
 export interface HVACInputs {
   velocity: number;
   friction: number;
+  cfm: number;
 }
 
 export interface HVACResults {
@@ -24,17 +25,14 @@ export function calculateCFM(velocity: number, diameter: number): number {
 }
 
 /**
- * Calculate optimal duct diameter based on velocity
- * Uses a standard approach for HVAC duct sizing
+ * Calculate optimal duct diameter based on velocity and CFM
+ * Uses standard HVAC duct sizing formulas
  * Result in inches, constrained to 2-60 inches
  */
-export function calculateDiameterFromVelocity(velocity: number): number {
-  if (velocity <= 0) return 0;
+export function calculateDiameterFromVelocity(velocity: number, cfm: number): number {
+  if (velocity <= 0 || cfm <= 0) return 0;
   
-  // Use standard CFM per square inch of duct area approach
-  // For velocity calculations, assume 1000 CFM as reference
-  const referenceCFM = 1000;
-  const areaSquareFeet = referenceCFM / velocity;
+  const areaSquareFeet = cfm / velocity;
   const diameterFeet = Math.sqrt(4 * areaSquareFeet / Math.PI);
   const diameterInches = diameterFeet * 12;
   
@@ -43,17 +41,15 @@ export function calculateDiameterFromVelocity(velocity: number): number {
 }
 
 /**
- * Calculate duct diameter based on friction loss
+ * Calculate duct diameter based on friction loss and CFM
  * Using ASHRAE standard friction loss calculations
  * Formula: D = (CFM / (2610 × √friction))^(1/1.85)
  * Result constrained to 2-60 inches
  */
-export function calculateDiameterFromFriction(friction: number): number {
-  if (friction <= 0) return 0;
+export function calculateDiameterFromFriction(friction: number, cfm: number): number {
+  if (friction <= 0 || cfm <= 0) return 0;
   
-  // Use standard CFM for friction calculations
-  const referenceCFM = 1000;
-  const diameter = Math.pow(referenceCFM / (2610 * Math.sqrt(friction)), 1/1.85);
+  const diameter = Math.pow(cfm / (2610 * Math.sqrt(friction)), 1/1.85);
   
   // Constrain to 2-60 inches range
   return Math.max(2, Math.min(60, diameter));
@@ -77,6 +73,12 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
     }
   }
   
+  if (inputs.cfm !== undefined) {
+    if (inputs.cfm < 500 || inputs.cfm > 50000) {
+      errors.push("CFM should be between 500-50000");
+    }
+  }
+  
   return errors;
 }
 
@@ -84,25 +86,19 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
  * Calculate all HVAC results based on inputs
  */
 export function calculateHVACResults(inputs: HVACInputs): HVACResults {
-  const { velocity, friction } = inputs;
+  const { velocity, friction, cfm } = inputs;
   
-  let cfm = 0;
   let diameterVelocity = 0;
   let diameterFriction = 0;
   
-  // Calculate diameter based on velocity
-  if (velocity > 0) {
-    diameterVelocity = calculateDiameterFromVelocity(velocity);
+  // Calculate diameter based on velocity and CFM
+  if (velocity > 0 && cfm > 0) {
+    diameterVelocity = calculateDiameterFromVelocity(velocity, cfm);
   }
   
-  // Calculate diameter based on friction
-  if (friction > 0) {
-    diameterFriction = calculateDiameterFromFriction(friction);
-  }
-  
-  // Calculate CFM based on velocity and the calculated diameter from velocity
-  if (velocity > 0 && diameterVelocity > 0) {
-    cfm = calculateCFM(velocity, diameterVelocity);
+  // Calculate diameter based on friction and CFM
+  if (friction > 0 && cfm > 0) {
+    diameterFriction = calculateDiameterFromFriction(friction, cfm);
   }
   
   return {

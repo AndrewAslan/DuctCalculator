@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator, Wind, Ruler, AlertCircle, Info } from "lucide-react";
 import { 
   HVACInputs, 
@@ -16,7 +17,8 @@ import {
 export default function HVACCalculator() {
   const [inputs, setInputs] = useState<HVACInputs>({
     velocity: 1500,
-    friction: 0.1
+    friction: 0.1,
+    cfm: 1000
   });
   
   const [results, setResults] = useState<HVACResults>({
@@ -62,10 +64,19 @@ export default function HVACCalculator() {
       case 'friction':
         isValid = value >= 0.01 && value <= 1.0;
         break;
+      case 'cfm':
+        isValid = value >= 500 && value <= 50000;
+        break;
     }
     
     return `pr-16 ${isValid ? 'border-green-500' : value > 0 ? 'border-red-500' : ''}`;
   };
+
+  // Generate CFM options from 500 to 50000 in increments of 500
+  const cfmOptions = [];
+  for (let cfm = 500; cfm <= 50000; cfm += 500) {
+    cfmOptions.push(cfm);
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -116,6 +127,26 @@ export default function HVACCalculator() {
             <p className="text-xs text-gray-500">Typical range: 0.05-0.15 in./100ft</p>
           </div>
 
+          {/* CFM Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="cfm">Air Flow Rate (CFM)</Label>
+            <Select 
+              value={inputs.cfm.toString()} 
+              onValueChange={(value) => handleInputChange('cfm', value)}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select CFM" />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {cfmOptions.map((cfm) => (
+                  <SelectItem key={cfm} value={cfm.toString()}>
+                    {cfm.toLocaleString()} CFM
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-gray-500">Select from 500 to 50,000 CFM in 500 increments</p>
+          </div>
 
 
           {/* Errors */}
@@ -145,30 +176,30 @@ export default function HVACCalculator() {
 
       {/* Results Section */}
       <div className="space-y-6">
-        {/* CFM Result */}
+        {/* Selected CFM Display */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Wind className="text-orange-500 h-5 w-5" />
-                <span>Air Flow Rate (CFM)</span>
+                <span>Selected Air Flow Rate</span>
               </div>
               <Badge variant="secondary" className="bg-blue-100 text-primary">
-                Based on Velocity & Diameter
+                User Selection
               </Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-sm text-gray-600 mb-1">Calculated Air Flow</p>
+                <p className="text-sm text-gray-600 mb-1">Selected CFM Value</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {(results.cfm || 0).toFixed(0)} <span className="text-lg font-medium text-gray-500">CFM</span>
+                  {(results.cfm || 0).toLocaleString()} <span className="text-lg font-medium text-gray-500">CFM</span>
                 </p>
               </div>
               <p className="text-xs text-gray-500 flex items-center">
                 <Info className="h-3 w-3 mr-1" />
-                Calculated using velocity and calculated diameter
+                This CFM value is used for diameter calculations
               </p>
             </div>
           </CardContent>
@@ -197,7 +228,7 @@ export default function HVACCalculator() {
               </div>
               <p className="text-xs text-gray-500 flex items-center">
                 <Info className="h-3 w-3 mr-1" />
-                Based on desired CFM and velocity
+                Based on selected CFM and velocity
               </p>
             </div>
           </CardContent>
@@ -226,7 +257,7 @@ export default function HVACCalculator() {
               </div>
               <p className="text-xs text-gray-500 flex items-center">
                 <Info className="h-3 w-3 mr-1" />
-                Based on desired CFM and friction loss
+                Based on selected CFM and friction loss
               </p>
             </div>
           </CardContent>
@@ -249,8 +280,8 @@ export default function HVACCalculator() {
                 <p className="font-medium">{inputs.friction} in./100ft</p>
               </div>
               <div>
-                <p className="text-gray-600">Calculated CFM:</p>
-                <p className="font-medium">{(results.cfm || 0).toFixed(0)} CFM</p>
+                <p className="text-gray-600">Selected CFM:</p>
+                <p className="font-medium">{(results.cfm || 0).toLocaleString()} CFM</p>
               </div>
               <div>
                 <p className="text-gray-600">Calculation Time:</p>
