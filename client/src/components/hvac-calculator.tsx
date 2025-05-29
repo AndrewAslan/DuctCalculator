@@ -311,8 +311,8 @@ export default function HVACCalculator() {
                   wrapperStyle={{ paddingTop: '25px' }}
                   formatter={(value: any) => 
                     value === 'velocityBased' 
-                      ? 'Velocity based duct diameter (inches)' 
-                      : 'Friction based duct diameter (inches)'
+                      ? 'Velocity Based Duct Diameter (inches)' 
+                      : 'Friction Based Duct Diameter (inches)'
                   }
                 />
                 <Line 
