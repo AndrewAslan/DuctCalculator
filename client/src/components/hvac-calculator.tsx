@@ -221,35 +221,6 @@ export default function HVACCalculator() {
 
         {/* Results Section */}
         <div className="space-y-6">
-          {/* Selected CFM Display */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Wind className="text-orange-500 h-5 w-5" />
-                  <span>Selected Air Flow Rate</span>
-                </div>
-                <Badge variant="secondary" className="bg-blue-100 text-primary">
-                  User Selection
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600 mb-1">Selected CFM Value</p>
-                  <p className="text-3xl font-bold text-gray-900">
-                    {(results?.cfm || inputs.cfm || 0).toLocaleString()} <span className="text-lg font-medium text-gray-500">CFM</span>
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500 flex items-center">
-                  <Info className="h-3 w-3 mr-1" />
-                  This CFM value is used for diameter calculations
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Calculation Results */}
           {results && (
             <Card>
