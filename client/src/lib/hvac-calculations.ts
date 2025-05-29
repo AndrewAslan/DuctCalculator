@@ -46,14 +46,14 @@ export function calculateDiameterFromVelocity(velocity: number, cfm: number): nu
 
 /**
  * Calculate duct diameter based on friction loss and CFM
- * Using ASHRAE standard friction loss calculations
- * Formula: D = (CFM / (2610 × √friction))^(1/1.85)
+ * Using Excel formula: EVEN(((((0.109136*CFM*1.9)/friction))^(1/5.02))
  * Result rounded up to nearest even number (2-inch increments) between 2-60 inches
  */
 export function calculateDiameterFromFriction(friction: number, cfm: number): number {
   if (friction <= 0 || cfm <= 0) return 0;
   
-  const diameter = Math.pow(cfm / (2610 * Math.sqrt(friction)), 1/1.85);
+  // Excel formula: ((0.109136*CFM*1.9)/friction)^(1/5.02)
+  const diameter = Math.pow((0.109136 * cfm * 1.9) / friction, 1/5.02);
   
   // Round up to next even number (2-inch increments)
   // If already even, go to next even number; if odd, round up to next even
