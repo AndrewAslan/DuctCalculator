@@ -1,22 +1,21 @@
 export interface HVACInputs {
   velocity: number;
   friction: number;
-  cfm: number;
 }
 
 export interface HVACResults {
-  maxCFM: number;
+  cfm: number;
   diameterVelocity: number;
   diameterFriction: number;
   timestamp: string;
 }
 
 /**
- * Calculate maximum CFM based on duct area and velocity
+ * Calculate CFM based on duct diameter and velocity
  * CFM = Area × Velocity
  * Area = π × (diameter/2)² (in square feet)
  */
-export function calculateMaxCFM(velocity: number, diameter: number): number {
+export function calculateCFM(velocity: number, diameter: number): number {
   if (velocity <= 0 || diameter <= 0) return 0;
   
   const radiusInFeet = (diameter / 12) / 2; // Convert inches to feet
@@ -25,28 +24,35 @@ export function calculateMaxCFM(velocity: number, diameter: number): number {
 }
 
 /**
- * Calculate duct diameter based on CFM and velocity
+ * Calculate duct diameter based on velocity using standard diameter range
+ * For velocity-based calculations, we'll use a reference CFM
  * D = √(4 × CFM / (π × velocity))
- * Result in inches
+ * Result in inches, constrained to 2-60 inches
  */
-export function calculateDiameterFromVelocity(cfm: number, velocity: number): number {
-  if (velocity <= 0 || cfm <= 0) return 0;
+export function calculateDiameterFromVelocity(velocity: number, referenceCFM: number = 1000): number {
+  if (velocity <= 0) return 0;
   
-  const areaSquareFeet = cfm / velocity;
+  const areaSquareFeet = referenceCFM / velocity;
   const diameterFeet = Math.sqrt(4 * areaSquareFeet / Math.PI);
-  return diameterFeet * 12; // Convert feet to inches
+  const diameterInches = diameterFeet * 12;
+  
+  // Constrain to 2-60 inches range
+  return Math.max(2, Math.min(60, diameterInches));
 }
 
 /**
- * Calculate duct diameter based on CFM and friction loss
+ * Calculate duct diameter based on friction loss using standard friction calculations
  * Using Darcy-Weisbach equation approximation for HVAC ducts
  * Simplified formula: D = (CFM / (2610 × √friction))^(1/1.85)
+ * Result constrained to 2-60 inches
  */
-export function calculateDiameterFromFriction(cfm: number, friction: number): number {
-  if (friction <= 0 || cfm <= 0) return 0;
+export function calculateDiameterFromFriction(friction: number, referenceCFM: number = 1000): number {
+  if (friction <= 0) return 0;
   
-  const diameter = Math.pow(cfm / (2610 * Math.sqrt(friction)), 1/1.85);
-  return diameter;
+  const diameter = Math.pow(referenceCFM / (2610 * Math.sqrt(friction)), 1/1.85);
+  
+  // Constrain to 2-60 inches range
+  return Math.max(2, Math.min(60, diameter));
 }
 
 /**
@@ -67,12 +73,6 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
     }
   }
   
-  if (inputs.cfm !== undefined) {
-    if (inputs.cfm < 1 || inputs.cfm > 50000) {
-      errors.push("CFM should be between 1-50000");
-    }
-  }
-  
   return errors;
 }
 
@@ -80,31 +80,29 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
  * Calculate all HVAC results based on inputs
  */
 export function calculateHVACResults(inputs: HVACInputs): HVACResults {
-  const { velocity, friction, cfm } = inputs;
+  const { velocity, friction } = inputs;
   
-  let maxCFM = 0;
+  let cfm = 0;
   let diameterVelocity = 0;
   let diameterFriction = 0;
   
-  // Calculate diameter based on velocity if CFM and velocity are provided
-  if (cfm > 0 && velocity > 0) {
-    diameterVelocity = calculateDiameterFromVelocity(cfm, velocity);
-  }
-  
-  // Calculate diameter based on friction if CFM and friction are provided
-  if (cfm > 0 && friction > 0) {
-    diameterFriction = calculateDiameterFromFriction(cfm, friction);
-  }
-  
-  // Calculate max CFM based on velocity and diameter
+  // Calculate diameter based on velocity (using reference CFM of 1000)
   if (velocity > 0) {
-    // Use calculated diameter if available, otherwise use a standard 12" diameter
-    const calculatedDiameter = diameterVelocity > 0 ? diameterVelocity : 12;
-    maxCFM = calculateMaxCFM(velocity, calculatedDiameter);
+    diameterVelocity = calculateDiameterFromVelocity(velocity, 1000);
+  }
+  
+  // Calculate diameter based on friction (using reference CFM of 1000)
+  if (friction > 0) {
+    diameterFriction = calculateDiameterFromFriction(friction, 1000);
+  }
+  
+  // Calculate CFM based on velocity and the calculated diameter from velocity
+  if (velocity > 0 && diameterVelocity > 0) {
+    cfm = calculateCFM(velocity, diameterVelocity);
   }
   
   return {
-    maxCFM,
+    cfm,
     diameterVelocity,
     diameterFriction,
     timestamp: new Date().toLocaleTimeString()
