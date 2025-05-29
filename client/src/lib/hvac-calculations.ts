@@ -81,8 +81,8 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
   }
   
   if (inputs.cfm !== undefined) {
-    if (inputs.cfm < 100 || inputs.cfm > 51000) {
-      errors.push("CFM should be between 100-51000");
+    if (inputs.cfm < 100 || inputs.cfm > 55100) {
+      errors.push("CFM should be between 100-55100");
     }
   }
   

@@ -55,16 +55,16 @@ export default function HVACCalculator() {
         isValid = value >= 0.01 && value <= 1.0;
         break;
       case 'cfm':
-        isValid = value >= 100 && value <= 51000;
+        isValid = value >= 100 && value <= 55100;
         break;
     }
     
     return `pr-16 ${isValid ? 'border-green-500' : value > 0 ? 'border-red-500' : ''}`;
   };
 
-  // Generate CFM options: 100, 600, 1100, 1600, etc. up to 51000
+  // Generate CFM options: 100, 600, 1100, 1600, etc. up to 55100
   const cfmOptions: number[] = [];
-  for (let cfm = 100; cfm <= 51000; cfm += 500) {
+  for (let cfm = 100; cfm <= 55100; cfm += 500) {
     cfmOptions.push(cfm);
   }
 
@@ -192,7 +192,7 @@ export default function HVACCalculator() {
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-gray-500">Select from 100 to 51,000 CFM (100, 600, 1100, 1600...)</p>
+              <p className="text-xs text-gray-500">Select from 100 to 55,100 CFM (100, 600, 1100, 1600...)</p>
             </div>
 
             {/* Errors */}
