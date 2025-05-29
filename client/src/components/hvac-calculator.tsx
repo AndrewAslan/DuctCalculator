@@ -163,7 +163,7 @@ export default function HVACCalculator() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-1">Calculated Air Flow</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {results.cfm.toFixed(0)} <span className="text-lg font-medium text-gray-500">CFM</span>
+                  {(results.cfm || 0).toFixed(0)} <span className="text-lg font-medium text-gray-500">CFM</span>
                 </p>
               </div>
               <p className="text-xs text-gray-500 flex items-center">
@@ -192,7 +192,7 @@ export default function HVACCalculator() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-1">Required Duct Diameter</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {results.diameterVelocity.toFixed(1)} <span className="text-lg font-medium text-gray-500">inches</span>
+                  {(results.diameterVelocity || 0).toFixed(1)} <span className="text-lg font-medium text-gray-500">inches</span>
                 </p>
               </div>
               <p className="text-xs text-gray-500 flex items-center">
@@ -221,7 +221,7 @@ export default function HVACCalculator() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <p className="text-sm text-gray-600 mb-1">Required Duct Diameter</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {results.diameterFriction.toFixed(1)} <span className="text-lg font-medium text-gray-500">inches</span>
+                  {(results.diameterFriction || 0).toFixed(1)} <span className="text-lg font-medium text-gray-500">inches</span>
                 </p>
               </div>
               <p className="text-xs text-gray-500 flex items-center">
@@ -250,7 +250,7 @@ export default function HVACCalculator() {
               </div>
               <div>
                 <p className="text-gray-600">Calculated CFM:</p>
-                <p className="font-medium">{results.cfm.toFixed(0)} CFM</p>
+                <p className="font-medium">{(results.cfm || 0).toFixed(0)} CFM</p>
               </div>
               <div>
                 <p className="text-gray-600">Calculation Time:</p>

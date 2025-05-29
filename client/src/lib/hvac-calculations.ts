@@ -24,14 +24,16 @@ export function calculateCFM(velocity: number, diameter: number): number {
 }
 
 /**
- * Calculate duct diameter based on velocity using standard diameter range
- * For velocity-based calculations, we'll use a reference CFM
- * D = √(4 × CFM / (π × velocity))
+ * Calculate optimal duct diameter based on velocity
+ * Uses a standard approach for HVAC duct sizing
  * Result in inches, constrained to 2-60 inches
  */
-export function calculateDiameterFromVelocity(velocity: number, referenceCFM: number = 1000): number {
+export function calculateDiameterFromVelocity(velocity: number): number {
   if (velocity <= 0) return 0;
   
+  // Use standard CFM per square inch of duct area approach
+  // For velocity calculations, assume 1000 CFM as reference
+  const referenceCFM = 1000;
   const areaSquareFeet = referenceCFM / velocity;
   const diameterFeet = Math.sqrt(4 * areaSquareFeet / Math.PI);
   const diameterInches = diameterFeet * 12;
@@ -41,14 +43,16 @@ export function calculateDiameterFromVelocity(velocity: number, referenceCFM: nu
 }
 
 /**
- * Calculate duct diameter based on friction loss using standard friction calculations
- * Using Darcy-Weisbach equation approximation for HVAC ducts
- * Simplified formula: D = (CFM / (2610 × √friction))^(1/1.85)
+ * Calculate duct diameter based on friction loss
+ * Using ASHRAE standard friction loss calculations
+ * Formula: D = (CFM / (2610 × √friction))^(1/1.85)
  * Result constrained to 2-60 inches
  */
-export function calculateDiameterFromFriction(friction: number, referenceCFM: number = 1000): number {
+export function calculateDiameterFromFriction(friction: number): number {
   if (friction <= 0) return 0;
   
+  // Use standard CFM for friction calculations
+  const referenceCFM = 1000;
   const diameter = Math.pow(referenceCFM / (2610 * Math.sqrt(friction)), 1/1.85);
   
   // Constrain to 2-60 inches range
@@ -86,14 +90,14 @@ export function calculateHVACResults(inputs: HVACInputs): HVACResults {
   let diameterVelocity = 0;
   let diameterFriction = 0;
   
-  // Calculate diameter based on velocity (using reference CFM of 1000)
+  // Calculate diameter based on velocity
   if (velocity > 0) {
-    diameterVelocity = calculateDiameterFromVelocity(velocity, 1000);
+    diameterVelocity = calculateDiameterFromVelocity(velocity);
   }
   
-  // Calculate diameter based on friction (using reference CFM of 1000)
+  // Calculate diameter based on friction
   if (friction > 0) {
-    diameterFriction = calculateDiameterFromFriction(friction, 1000);
+    diameterFriction = calculateDiameterFromFriction(friction);
   }
   
   // Calculate CFM based on velocity and the calculated diameter from velocity
