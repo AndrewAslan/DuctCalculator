@@ -27,7 +27,7 @@ export function calculateCFM(velocity: number, diameter: number): number {
 /**
  * Calculate optimal duct diameter based on velocity and CFM
  * Uses standard HVAC duct sizing formulas
- * Result in inches, constrained to 2-60 inches
+ * Result in inches, rounded up to nearest even number (2-inch increments) between 2-60 inches
  */
 export function calculateDiameterFromVelocity(velocity: number, cfm: number): number {
   if (velocity <= 0 || cfm <= 0) return 0;
@@ -36,23 +36,29 @@ export function calculateDiameterFromVelocity(velocity: number, cfm: number): nu
   const diameterFeet = Math.sqrt(4 * areaSquareFeet / Math.PI);
   const diameterInches = diameterFeet * 12;
   
+  // Round up to nearest even number (2-inch increments)
+  const roundedDiameter = Math.ceil(diameterInches / 2) * 2;
+  
   // Constrain to 2-60 inches range
-  return Math.max(2, Math.min(60, diameterInches));
+  return Math.max(2, Math.min(60, roundedDiameter));
 }
 
 /**
  * Calculate duct diameter based on friction loss and CFM
  * Using ASHRAE standard friction loss calculations
  * Formula: D = (CFM / (2610 × √friction))^(1/1.85)
- * Result constrained to 2-60 inches
+ * Result rounded up to nearest even number (2-inch increments) between 2-60 inches
  */
 export function calculateDiameterFromFriction(friction: number, cfm: number): number {
   if (friction <= 0 || cfm <= 0) return 0;
   
   const diameter = Math.pow(cfm / (2610 * Math.sqrt(friction)), 1/1.85);
   
+  // Round up to nearest even number (2-inch increments)
+  const roundedDiameter = Math.ceil(diameter / 2) * 2;
+  
   // Constrain to 2-60 inches range
-  return Math.max(2, Math.min(60, diameter));
+  return Math.max(2, Math.min(60, roundedDiameter));
 }
 
 /**
