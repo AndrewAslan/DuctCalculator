@@ -72,10 +72,9 @@ export default function HVACCalculator() {
     return `pr-16 ${isValid ? 'border-green-500' : value > 0 ? 'border-red-500' : ''}`;
   };
 
-  // Generate CFM options from 100 to 100000 in increments of 500
+  // Generate CFM options: 100, 600, 1100, 1600, etc. up to 100000
   const cfmOptions = [];
-  cfmOptions.push(100); // Add 100 as the first option
-  for (let cfm = 500; cfm <= 100000; cfm += 500) {
+  for (let cfm = 100; cfm <= 100000; cfm += 500) {
     cfmOptions.push(cfm);
   }
 
@@ -146,7 +145,7 @@ export default function HVACCalculator() {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-gray-500">Select from 100 to 100,000 CFM (500 increments)</p>
+            <p className="text-xs text-gray-500">Select from 100 to 100,000 CFM (100, 600, 1100, 1600...)</p>
           </div>
 
 
