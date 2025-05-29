@@ -36,8 +36,9 @@ export function calculateDiameterFromVelocity(velocity: number, cfm: number): nu
   const diameterFeet = Math.sqrt(4 * areaSquareFeet / Math.PI);
   const diameterInches = diameterFeet * 12;
   
-  // Round up to nearest even number (2-inch increments)
-  const roundedDiameter = Math.ceil(diameterInches / 2) * 2;
+  // Round up to next even number (2-inch increments)
+  // If already even, go to next even number; if odd, round up to next even
+  const roundedDiameter = Math.floor(diameterInches / 2) * 2 + 2;
   
   // Constrain to 2-60 inches range
   return Math.max(2, Math.min(60, roundedDiameter));
@@ -54,8 +55,9 @@ export function calculateDiameterFromFriction(friction: number, cfm: number): nu
   
   const diameter = Math.pow(cfm / (2610 * Math.sqrt(friction)), 1/1.85);
   
-  // Round up to nearest even number (2-inch increments)
-  const roundedDiameter = Math.ceil(diameter / 2) * 2;
+  // Round up to next even number (2-inch increments)
+  // If already even, go to next even number; if odd, round up to next even
+  const roundedDiameter = Math.floor(diameter / 2) * 2 + 2;
   
   // Constrain to 2-60 inches range
   return Math.max(2, Math.min(60, roundedDiameter));
