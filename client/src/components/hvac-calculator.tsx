@@ -307,7 +307,8 @@ export default function HVACCalculator() {
                 />
                 <Legend 
                   verticalAlign="bottom"
-                  height={36}
+                  height={50}
+                  wrapperStyle={{ paddingTop: '15px' }}
                   formatter={(value: any) => 
                     value === 'velocityBased' 
                       ? 'Velocity based duct diameter (inches)' 
