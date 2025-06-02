@@ -324,6 +324,7 @@ export default function HVACCalculator() {
                     const { payload } = props;
                     return payload?.isCurrentPoint ? (
                       <circle 
+                        key={`velocity-${props.cx}-${props.cy}`}
                         cx={props.cx} 
                         cy={props.cy} 
                         r={6} 
@@ -333,6 +334,7 @@ export default function HVACCalculator() {
                       />
                     ) : (
                       <circle 
+                        key={`velocity-${props.cx}-${props.cy}`}
                         cx={props.cx} 
                         cy={props.cy} 
                         r={2} 
@@ -350,6 +352,7 @@ export default function HVACCalculator() {
                     const { payload } = props;
                     return payload?.isCurrentPoint ? (
                       <circle 
+                        key={`friction-${props.cx}-${props.cy}`}
                         cx={props.cx} 
                         cy={props.cy} 
                         r={6} 
@@ -359,6 +362,7 @@ export default function HVACCalculator() {
                       />
                     ) : (
                       <circle 
+                        key={`friction-${props.cx}-${props.cy}`}
                         cx={props.cx} 
                         cy={props.cy} 
                         r={2} 
