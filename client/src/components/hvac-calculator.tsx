@@ -15,6 +15,12 @@ import autoTable from 'jspdf-autotable';
 export default function HVACCalculator() {
   const [velocityLimit, setVelocityLimit] = useState<number>(2500);
   const [frictionLimit, setFrictionLimit] = useState<number>(0.15);
+  
+  // Project information state
+  const [projectName, setProjectName] = useState<string>('');
+  const [engineerName, setEngineerName] = useState<string>('');
+  const [projectDate, setProjectDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [jobNumber, setJobNumber] = useState<string>('');
 
   // Generate duct diameters from 4 to 60 in increments of 2
   const ductDiameters = useMemo(() => {
@@ -102,8 +108,8 @@ export default function HVACCalculator() {
       // Title
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(18);
-      doc.setFont(undefined, 'bold');
-      doc.text('HVAC DUCTWORK CFM CALCULATOR REPORT', pageWidth / 2, 16, { align: 'center' });
+      doc.setFont('helvetica', 'bold');
+      doc.text('HVAC DUCTWORK CFM CALCULATOR REPORT', pageWidth / 2, 16, { align: 'center' } as any);
       
       // Company logo placeholder
       doc.setTextColor(255, 255, 255);
@@ -114,23 +120,23 @@ export default function HVACCalculator() {
       // Project information section
       doc.setTextColor(0, 0, 0);
       doc.setFontSize(14);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('Project Information', 20, 40);
       
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
-      doc.text('Project Name: ________________________________', 20, 50);
-      doc.text('Engineer: ____________________________________', 20, 58);
-      doc.text('Date: ________________________________________', 20, 66);
-      doc.text('Job Number: __________________________________', 20, 74);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Project Name: ${projectName || '________________________________'}`, 20, 50);
+      doc.text(`Engineer: ${engineerName || '____________________________________'}`, 20, 58);
+      doc.text(`Date: ${projectDate || '________________________________________'}`, 20, 66);
+      doc.text(`Job Number: ${jobNumber || '__________________________________'}`, 20, 74);
       
       // Calculation parameters
       doc.setFontSize(14);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('Calculation Parameters', 20, 90);
       
       doc.setFontSize(10);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.text(`Velocity Limit: ${velocityLimit} FPM`, 20, 100);
       doc.text(`Friction Limit: ${frictionLimit} in w.g./100 ft`, 20, 108);
       doc.text(`Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 20, 116);
@@ -139,11 +145,11 @@ export default function HVACCalculator() {
       // Intersection points summary
       if (intersectionPoints.length > 0) {
         doc.setFontSize(12);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Intersection Points (Equal CFM)', 20, 140);
         
         doc.setFontSize(10);
-        doc.setFont(undefined, 'normal');
+        doc.setFont('helvetica', 'normal');
         intersectionPoints.forEach((intersection, index) => {
           doc.text(`• At ${intersection.diameter}" diameter: ${intersection.cfm.toLocaleString()} CFM`, 25, 148 + (index * 8));
         });
@@ -153,20 +159,18 @@ export default function HVACCalculator() {
       const tableStartY = intersectionPoints.length > 0 ? 170 : 150;
       
       doc.setFontSize(12);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('CFM Calculations by Duct Diameter', 20, tableStartY - 5);
       
-      // Prepare enhanced table data
-      const tableHeaders = ['Diameter\n(inches)', 'Velocity CFM\n(Adjusted)', 'Friction CFM\n(Standard)', 'Difference\n(CFM)', 'Recommended\n(Lower CFM)'];
+      // Prepare table data
+      const tableHeaders = ['Diameter\n(inches)', 'Velocity CFM\n(Adjusted)', 'Friction CFM\n(Standard)', 'Difference\n(CFM)'];
       const tableData = cfmCalculations.map(calc => {
         const difference = Math.abs(calc.velocityCFM - calc.frictionCFM);
-        const recommended = Math.min(calc.velocityCFM, calc.frictionCFM);
         return [
           `${calc.diameter}"`,
           calc.velocityCFM.toLocaleString(),
           calc.frictionCFM.toLocaleString(),
-          difference.toLocaleString(),
-          recommended.toLocaleString()
+          difference.toLocaleString()
         ];
       });
       
@@ -194,11 +198,10 @@ export default function HVACCalculator() {
           fillColor: [248, 250, 252]
         },
         columnStyles: {
-          0: { cellWidth: 25 },
-          1: { cellWidth: 30 },
-          2: { cellWidth: 30 },
-          3: { cellWidth: 25 },
-          4: { cellWidth: 35, fillColor: [220, 252, 231] } // Highlight recommended column
+          0: { cellWidth: 35 },
+          1: { cellWidth: 45 },
+          2: { cellWidth: 45 },
+          3: { cellWidth: 35 }
         }
       });
       
@@ -207,9 +210,9 @@ export default function HVACCalculator() {
       if (finalY < pageHeight - 40) {
         doc.setFontSize(8);
         doc.setTextColor(128, 128, 128);
-        doc.text('This report was generated by HVAC Ductwork CFM Calculator', pageWidth / 2, pageHeight - 20, { align: 'center' });
-        doc.text('Calculations based on standard ASHRAE formulas', pageWidth / 2, pageHeight - 15, { align: 'center' });
-        doc.text('Note: Velocity CFM values include 0.007% reduction for practical sizing', pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text('This report was generated by HVAC Ductwork CFM Calculator', pageWidth / 2, pageHeight - 20, { align: 'center' } as any);
+        doc.text('Calculations based on standard ASHRAE formulas', pageWidth / 2, pageHeight - 15, { align: 'center' } as any);
+        doc.text('Note: Velocity CFM values include 0.007% reduction for practical sizing', pageWidth / 2, pageHeight - 10, { align: 'center' } as any);
       }
       
       // Save with descriptive filename
@@ -234,8 +237,56 @@ export default function HVACCalculator() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Project Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Project Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="project-name">Project Name</Label>
+                <Input
+                  id="project-name"
+                  type="text"
+                  value={projectName}
+                  onChange={(e) => setProjectName(e.target.value)}
+                  placeholder="Enter project name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="engineer-name">Engineer</Label>
+                <Input
+                  id="engineer-name"
+                  type="text"
+                  value={engineerName}
+                  onChange={(e) => setEngineerName(e.target.value)}
+                  placeholder="Enter engineer name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="project-date">Date</Label>
+                <Input
+                  id="project-date"
+                  type="date"
+                  value={projectDate}
+                  onChange={(e) => setProjectDate(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="job-number">Job Number</Label>
+                <Input
+                  id="job-number"
+                  type="text"
+                  value={jobNumber}
+                  onChange={(e) => setJobNumber(e.target.value)}
+                  placeholder="Enter job number"
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
           {/* Input Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="velocity-limit" className="flex items-center gap-2">
                 <Wind className="h-4 w-4" />
