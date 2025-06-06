@@ -211,9 +211,9 @@ export default function HVACCalculator() {
                     dataKey="diameter" 
                     label={{ 
                       value: 'Duct Diameter (inches)', 
-                      position: 'insideBottomLeft', 
+                      position: 'insideBottom', 
                       offset: -40,
-                      dx: 150
+                      dx: -30
                     }}
                     tick={{ dy: 15 }}
                     axisLine={{ stroke: '#374151' }}
