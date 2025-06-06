@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calculator, Wind, Ruler, Download, BarChart3 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceDot } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Scatter, ScatterChart } from 'recharts';
 import { calculateCFMFromVelocity, calculateCFMFromFriction } from "@/lib/hvac-calculations";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -43,15 +43,6 @@ export default function HVACCalculator() {
       };
     });
   }, [ductDiameters, velocityLimit, frictionLimit]);
-
-  // Prepare chart data
-  const chartData = useMemo(() => {
-    return cfmCalculations.map(calc => ({
-      diameter: calc.diameter,
-      "Velocity CFM": calc.velocityCFM,
-      "Friction CFM": calc.frictionCFM
-    }));
-  }, [cfmCalculations]);
 
   // Find intersection points where velocity and friction CFM lines cross
   const intersectionPoints = useMemo(() => {
@@ -103,6 +94,15 @@ export default function HVACCalculator() {
     }
     
     return intersections;
+  }, [cfmCalculations]);
+
+  // Prepare chart data
+  const chartData = useMemo(() => {
+    return cfmCalculations.map(calc => ({
+      diameter: calc.diameter,
+      "Velocity CFM": calc.velocityCFM,
+      "Friction CFM": calc.frictionCFM
+    }));
   }, [cfmCalculations]);
 
   // Validate input values
@@ -251,75 +251,40 @@ export default function HVACCalculator() {
                       style: { textAnchor: 'middle' },
                       offset: -40
                     }}
-                    domain={['dataMin', 'dataMax']}
                   />
                   <Tooltip 
                     formatter={(value, name) => [Number(value).toLocaleString(), name]}
                     labelFormatter={(label) => `${label}" Diameter`}
-                    content={({ active, payload, label }) => {
-                      if (active && payload && payload.length) {
-                        const intersection = intersectionPoints.find(
-                          int => Math.abs(int.diameter - Number(label)) < 1
-                        );
-                        return (
-                          <div className="bg-white p-3 border rounded shadow-lg">
-                            <p className="font-medium">{`${label}" Diameter`}</p>
-                            {payload.map((entry, index) => (
-                              <p key={index} style={{ color: entry.color }}>
-                                {`${entry.name}: ${Number(entry.value).toLocaleString()}`}
-                              </p>
-                            ))}
-                            {intersection && (
-                              <p className="font-medium text-green-600 mt-2">
-                                ⚬ Intersection: {intersection.cfm.toLocaleString()} CFM
-                              </p>
-                            )}
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
                   />
                   <Legend wrapperStyle={{ paddingTop: '30px', paddingBottom: '10px' }} />
                   <Line 
                     type="monotone" 
                     dataKey="Velocity CFM" 
                     stroke="#2563eb" 
-                    strokeWidth={2}
-                    dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
+                    strokeWidth={3}
+                    dot={{ fill: '#2563eb', strokeWidth: 2, r: 5 }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="Friction CFM" 
                     stroke="#dc2626" 
-                    strokeWidth={2}
-                    dot={{ fill: '#dc2626', strokeWidth: 2, r: 4 }}
+                    strokeWidth={3}
+                    dot={{ fill: '#dc2626', strokeWidth: 2, r: 5 }}
                   />
-                  {/* Mark intersection points with highly visible markers */}
+                  {/* Add intersection markers as additional data points */}
                   {intersectionPoints.map((intersection, index) => (
-                    <ReferenceDot
+                    <Line
                       key={`intersection-${index}`}
-                      x={intersection.diameter}
-                      y={intersection.cfm}
-                      r={15}
-                      fill="#22c55e"
-                      stroke="#000000"
-                      strokeWidth={3}
-                      fillOpacity={1}
-                    />
-                  ))}
-                  {/* Add a pulsing outer ring */}
-                  {intersectionPoints.map((intersection, index) => (
-                    <ReferenceDot
-                      key={`intersection-ring-${index}`}
-                      x={intersection.diameter}
-                      y={intersection.cfm}
-                      r={22}
-                      fill="none"
-                      stroke="#22c55e"
-                      strokeWidth={4}
-                      fillOpacity={0}
-                      strokeDasharray="5,5"
+                      type="monotone"
+                      data={[{ diameter: intersection.diameter, value: intersection.cfm }]}
+                      dataKey="value"
+                      stroke="none"
+                      dot={{ 
+                        fill: '#22c55e', 
+                        stroke: '#000000', 
+                        strokeWidth: 4, 
+                        r: 15 
+                      }}
                     />
                   ))}
                 </LineChart>
