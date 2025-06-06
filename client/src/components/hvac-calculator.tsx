@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Calculator, Wind, Ruler, Download } from "lucide-react";
+import { Calculator, Wind, Ruler, Download, BarChart3 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { calculateCFMFromVelocity, calculateCFMFromFriction } from "@/lib/hvac-calculations";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -14,7 +15,6 @@ import autoTable from 'jspdf-autotable';
 export default function HVACCalculator() {
   const [velocityLimit, setVelocityLimit] = useState<number>(2500);
   const [frictionLimit, setFrictionLimit] = useState<number>(0.15);
-  const [calculationType, setCalculationType] = useState<'velocity' | 'friction'>('velocity');
 
   // Generate duct diameters from 4 to 60 in increments of 2
   const ductDiameters = useMemo(() => {
@@ -43,6 +43,15 @@ export default function HVACCalculator() {
       };
     });
   }, [ductDiameters, velocityLimit, frictionLimit]);
+
+  // Prepare chart data
+  const chartData = useMemo(() => {
+    return cfmCalculations.map(calc => ({
+      diameter: calc.diameter,
+      "Velocity CFM": calc.velocityCFM,
+      "Friction CFM": calc.frictionCFM
+    }));
+  }, [cfmCalculations]);
 
   // Validate input values
   const isValidVelocity = velocityLimit > 0 && velocityLimit <= 5000;
@@ -157,25 +166,7 @@ export default function HVACCalculator() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>Calculation Type</Label>
-              <div className="flex gap-2">
-                <Button
-                  variant={calculationType === 'velocity' ? 'default' : 'outline'}
-                  onClick={() => setCalculationType('velocity')}
-                  className="flex-1"
-                >
-                  Velocity
-                </Button>
-                <Button
-                  variant={calculationType === 'friction' ? 'default' : 'outline'}
-                  onClick={() => setCalculationType('friction')}
-                  className="flex-1"
-                >
-                  Friction
-                </Button>
-              </div>
-            </div>
+
           </div>
 
           <Separator />
@@ -183,12 +174,14 @@ export default function HVACCalculator() {
           {/* Results Table */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <Badge variant="outline" className="text-sm">
-                {calculationType === 'velocity' 
-                  ? `Velocity-based CFM (${velocityLimit} FPM limit)`
-                  : `Friction-based CFM (${frictionLimit} in w.g./100 ft limit)`
-                }
-              </Badge>
+              <div className="flex gap-2">
+                <Badge variant="outline" className="text-sm">
+                  Velocity: {velocityLimit} FPM
+                </Badge>
+                <Badge variant="outline" className="text-sm">
+                  Friction: {frictionLimit} in w.g./100 ft
+                </Badge>
+              </div>
               <Button onClick={exportToPDF} variant="outline" size="sm" className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
                 Export PDF
@@ -212,14 +205,21 @@ export default function HVACCalculator() {
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-semibold bg-muted/50">
-                      Max CFM
+                      Velocity CFM
                     </TableCell>
                     {cfmCalculations.map(calc => (
                       <TableCell key={calc.diameter} className="text-center font-mono">
-                        {calculationType === 'velocity' 
-                          ? calc.velocityCFM.toLocaleString()
-                          : calc.frictionCFM.toLocaleString()
-                        }
+                        {calc.velocityCFM.toLocaleString()}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-semibold bg-muted/50">
+                      Friction CFM
+                    </TableCell>
+                    {cfmCalculations.map(calc => (
+                      <TableCell key={calc.diameter} className="text-center font-mono">
+                        {calc.frictionCFM.toLocaleString()}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -235,7 +235,7 @@ export default function HVACCalculator() {
               <div className="space-y-1 text-sm">
                 <div>Velocity Limit: {velocityLimit} FPM</div>
                 <div>Friction Limit: {frictionLimit} in w.g./100 ft</div>
-                <div>Showing: {calculationType === 'velocity' ? 'Velocity' : 'Friction'}-based calculations</div>
+                <div>Showing: Both velocity and friction calculations</div>
               </div>
             </Card>
             
