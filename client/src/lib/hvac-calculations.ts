@@ -105,20 +105,19 @@ export function calculateCFMFromFriction(friction: number, diameter: number): nu
 
 /**
  * Calculate CFM based on velocity limit and duct diameter
- * Exactly matching Excel formula: diameter = EVEN(SQRT((CFM/3.14159)*4)/velocity*12)
- * Rearranging for CFM: CFM = PI * (diameter * velocity / 12)^2 / 4
+ * Standard formula: CFM = Area × Velocity
+ * Area = π × (radius)² = π × (diameter/2)² 
+ * Converting diameter from inches to feet: diameter_ft = diameter_in / 12
  */
 export function calculateCFMFromVelocity(velocity: number, diameter: number): number {
   if (velocity <= 0 || diameter <= 0) return 0;
   
-  // From Excel: diameter = SQRT((CFM/PI)*4)/velocity*12
-  // Rearranging step by step:
-  // diameter = SQRT((CFM/PI)*4) / velocity * 12
-  // diameter * velocity / 12 = SQRT((CFM/PI)*4)
-  // (diameter * velocity / 12)^2 = (CFM/PI)*4
-  // CFM = PI * (diameter * velocity / 12)^2 / 4
+  // Standard HVAC formula: CFM = (π × D²/4) × V / 144
+  // Where D is diameter in inches, V is velocity in FPM
+  // Divide by 144 to convert square inches to square feet
+  const area = (Math.PI * Math.pow(diameter, 2)) / 4; // Area in square inches
+  const cfm = (area * velocity) / 144; // Convert to CFM (sq ft × fpm)
   
-  const cfm = Math.PI * Math.pow(diameter * velocity / 12, 2) / 4;
   return cfm;
 }
 
