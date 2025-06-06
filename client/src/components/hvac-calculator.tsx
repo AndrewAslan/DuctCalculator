@@ -101,7 +101,7 @@ export default function HVACCalculator() {
       const pageWidth = doc.internal.pageSize.width;
       const pageHeight = doc.internal.pageSize.height;
       
-      // Header with company logo space
+      // Header
       doc.setFillColor(59, 130, 246);
       doc.rect(0, 0, pageWidth, 25, 'F');
       
@@ -110,12 +110,6 @@ export default function HVACCalculator() {
       doc.setFontSize(18);
       doc.setFont('helvetica', 'bold');
       doc.text('HVAC DUCTWORK CFM CALCULATOR REPORT', pageWidth / 2, 16, { align: 'center' } as any);
-      
-      // Company logo placeholder
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(8);
-      doc.text('Company Logo Space', 15, 8);
-      doc.rect(10, 3, 50, 15);
       
       // Project information section
       doc.setTextColor(0, 0, 0);
