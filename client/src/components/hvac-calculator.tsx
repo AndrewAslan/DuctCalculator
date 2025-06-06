@@ -76,13 +76,14 @@ export default function HVACCalculator() {
         const intersectionCFM = current.velocityCFM + (next.velocityCFM - current.velocityCFM) * ratio;
         
         intersections.push({
-          diameter: Math.round(intersectionDiameter * 2) / 2, // Round to nearest 0.5
+          diameter: Math.round(intersectionDiameter * 2) / 2,
           cfm: Math.round(intersectionCFM)
         });
+        break; // Only need the first intersection
       }
     }
     
-    // If no intersection found, find the closest points (they might be very close)
+    // If no exact crossing found, find the point where lines are closest
     if (intersections.length === 0) {
       let minDiff = Infinity;
       let closestPoint = { diameter: 0, cfm: 0 };
@@ -98,9 +99,7 @@ export default function HVACCalculator() {
         }
       });
       
-      if (minDiff < 1000) { // If lines are close (within 1000 CFM)
-        intersections.push(closestPoint);
-      }
+      intersections.push(closestPoint);
     }
     
     return intersections;
@@ -252,6 +251,7 @@ export default function HVACCalculator() {
                       style: { textAnchor: 'middle' },
                       offset: -40
                     }}
+                    domain={['dataMin', 'dataMax']}
                   />
                   <Tooltip 
                     formatter={(value, name) => [Number(value).toLocaleString(), name]}
@@ -295,30 +295,31 @@ export default function HVACCalculator() {
                     strokeWidth={2}
                     dot={{ fill: '#dc2626', strokeWidth: 2, r: 4 }}
                   />
-                  {/* Mark intersection points */}
+                  {/* Mark intersection points with highly visible markers */}
                   {intersectionPoints.map((intersection, index) => (
                     <ReferenceDot
                       key={`intersection-${index}`}
                       x={intersection.diameter}
                       y={intersection.cfm}
-                      r={10}
-                      fill="#10b981"
-                      stroke="#065f46"
-                      strokeWidth={2}
-                      fillOpacity={0.9}
+                      r={15}
+                      fill="#22c55e"
+                      stroke="#000000"
+                      strokeWidth={3}
+                      fillOpacity={1}
                     />
                   ))}
-                  {/* Add a larger outer ring for better visibility */}
+                  {/* Add a pulsing outer ring */}
                   {intersectionPoints.map((intersection, index) => (
                     <ReferenceDot
                       key={`intersection-ring-${index}`}
                       x={intersection.diameter}
                       y={intersection.cfm}
-                      r={14}
+                      r={22}
                       fill="none"
-                      stroke="#10b981"
-                      strokeWidth={3}
+                      stroke="#22c55e"
+                      strokeWidth={4}
                       fillOpacity={0}
+                      strokeDasharray="5,5"
                     />
                   ))}
                 </LineChart>
