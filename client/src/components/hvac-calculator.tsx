@@ -31,8 +31,8 @@ export default function HVACCalculator() {
       const rawVelocityCFM = calculateCFMFromVelocity(velocityLimit, diameter);
       const frictionCFM = calculateCFMFromFriction(frictionLimit, diameter);
       
-      // Adjust velocity CFM: subtract 0.00007% or minimum 1 CFM (whichever is larger)
-      const adjustmentPercent = rawVelocityCFM * 0.0000007; // 0.00007% in decimal form
+      // Adjust velocity CFM: subtract 0.007% or minimum 1 CFM (whichever is larger)
+      const adjustmentPercent = rawVelocityCFM * 0.00007; // 0.007% in decimal form
       const adjustment = adjustmentPercent > 1 ? adjustmentPercent : 1;
       const adjustedVelocityCFM = rawVelocityCFM - adjustment;
       
