@@ -28,11 +28,17 @@ export default function HVACCalculator() {
   // Calculate CFM values for each diameter
   const cfmCalculations = useMemo(() => {
     return ductDiameters.map(diameter => {
-      const velocityCFM = calculateCFMFromVelocity(velocityLimit, diameter);
+      const rawVelocityCFM = calculateCFMFromVelocity(velocityLimit, diameter);
       const frictionCFM = calculateCFMFromFriction(frictionLimit, diameter);
+      
+      // Adjust velocity CFM: subtract 0.00007% or minimum 1 CFM
+      const adjustmentPercent = rawVelocityCFM * 0.0000007; // 0.00007%
+      const adjustment = adjustmentPercent > 1 ? adjustmentPercent : 1;
+      const adjustedVelocityCFM = rawVelocityCFM - adjustment;
+      
       return {
         diameter,
-        velocityCFM: Math.round(Math.max(0, velocityCFM)), // Ensure no negative values
+        velocityCFM: Math.round(Math.max(0, adjustedVelocityCFM)), // Ensure no negative values
         frictionCFM: Math.round(Math.max(0, frictionCFM))  // Ensure no negative values
       };
     });
