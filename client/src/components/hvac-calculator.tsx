@@ -205,7 +205,7 @@ export default function HVACCalculator() {
             </div>
             <div className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 80 }}>
+                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 100, bottom: 120 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="diameter" 
@@ -223,7 +223,7 @@ export default function HVACCalculator() {
                       angle: -90, 
                       position: 'outside',
                       style: { textAnchor: 'middle' },
-                      offset: -40
+                      offset: -80
                     }}
                   />
                   <Tooltip 
@@ -253,7 +253,7 @@ export default function HVACCalculator() {
                       return null;
                     }}
                   />
-                  <Legend wrapperStyle={{ paddingTop: '30px', paddingBottom: '10px' }} />
+                  <Legend wrapperStyle={{ paddingTop: '50px', paddingBottom: '20px' }} />
                   <Line 
                     type="monotone" 
                     dataKey="Velocity CFM" 
