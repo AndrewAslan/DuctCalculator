@@ -171,6 +171,49 @@ export default function HVACCalculator() {
 
           <Separator />
 
+          {/* CFM Chart */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart3 className="h-5 w-5" />
+              <h3 className="text-lg font-semibold">CFM vs Duct Diameter</h3>
+            </div>
+            <div className="h-96 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis 
+                    dataKey="diameter" 
+                    label={{ value: 'Duct Diameter (inches)', position: 'insideBottom', offset: -5 }}
+                  />
+                  <YAxis 
+                    label={{ value: 'CFM', angle: -90, position: 'insideLeft' }}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => [Number(value).toLocaleString(), name]}
+                    labelFormatter={(label) => `${label}" Diameter`}
+                  />
+                  <Legend />
+                  <Line 
+                    type="monotone" 
+                    dataKey="Velocity CFM" 
+                    stroke="#2563eb" 
+                    strokeWidth={2}
+                    dot={{ fill: '#2563eb', strokeWidth: 2, r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="Friction CFM" 
+                    stroke="#dc2626" 
+                    strokeWidth={2}
+                    dot={{ fill: '#dc2626', strokeWidth: 2, r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <Separator />
+
           {/* Results Table */}
           <div>
             <div className="flex items-center justify-between mb-4">
