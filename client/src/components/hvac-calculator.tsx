@@ -136,7 +136,7 @@ export default function HVACCalculator() {
                 <TableBody>
                   <TableRow>
                     <TableCell className="font-semibold bg-muted/50">
-                      CFM
+                      Max CFM
                     </TableCell>
                     {cfmCalculations.map(calc => (
                       <TableCell key={calc.diameter} className="text-center font-mono">
