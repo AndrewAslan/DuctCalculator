@@ -90,6 +90,19 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
 }
 
 /**
+ * Calculate CFM based on friction limit and duct diameter
+ * Derived from the friction formula: friction = (0.109136 * CFM^1.9) / diameter^5.02
+ * Solving for CFM: CFM = ((friction * diameter^5.02) / 0.109136)^(1/1.9)
+ */
+export function calculateCFMFromFriction(friction: number, diameter: number): number {
+  if (friction <= 0 || diameter <= 0) return 0;
+  
+  // CFM = ((friction * diameter^5.02) / 0.109136)^(1/1.9)
+  const cfm = Math.pow((friction * Math.pow(diameter, 5.02)) / 0.109136, 1/1.9);
+  return cfm;
+}
+
+/**
  * Calculate all HVAC results based on inputs
  */
 export function calculateHVACResults(inputs: HVACInputs): HVACResults {
