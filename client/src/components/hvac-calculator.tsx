@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calculator, Wind, Ruler, Download, BarChart3 } from "lucide-react";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceDot } from 'recharts';
 import { calculateCFMFromVelocity, calculateCFMFromFriction } from "@/lib/hvac-calculations";
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -51,6 +51,32 @@ export default function HVACCalculator() {
       "Velocity CFM": calc.velocityCFM,
       "Friction CFM": calc.frictionCFM
     }));
+  }, [cfmCalculations]);
+
+  // Find intersection points where velocity and friction CFM lines cross
+  const intersectionPoints = useMemo(() => {
+    const intersections: Array<{ diameter: number; cfm: number }> = [];
+    for (let i = 0; i < cfmCalculations.length - 1; i++) {
+      const current = cfmCalculations[i];
+      const next = cfmCalculations[i + 1];
+      
+      // Check if lines cross between these two points
+      const velocityDiff1 = current.velocityCFM - current.frictionCFM;
+      const velocityDiff2 = next.velocityCFM - next.frictionCFM;
+      
+      if (velocityDiff1 * velocityDiff2 < 0) { // Sign change indicates crossing
+        // Interpolate intersection point
+        const ratio = Math.abs(velocityDiff1) / (Math.abs(velocityDiff1) + Math.abs(velocityDiff2));
+        const intersectionDiameter = current.diameter + (next.diameter - current.diameter) * ratio;
+        const intersectionCFM = current.velocityCFM + (next.velocityCFM - current.velocityCFM) * ratio;
+        
+        intersections.push({
+          diameter: Math.round(intersectionDiameter * 10) / 10,
+          cfm: Math.round(intersectionCFM)
+        });
+      }
+    }
+    return intersections;
   }, [cfmCalculations]);
 
   // Validate input values
@@ -179,20 +205,55 @@ export default function HVACCalculator() {
             </div>
             <div className="h-96 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 60, bottom: 80 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="diameter" 
-                    label={{ value: 'Duct Diameter (inches)', position: 'insideBottom', offset: -5 }}
+                    label={{ 
+                      value: 'Duct Diameter (inches)', 
+                      position: 'insideBottom', 
+                      offset: -40,
+                      textAnchor: 'middle'
+                    }}
+                    tick={{ dy: 15 }}
                   />
                   <YAxis 
-                    label={{ value: 'CFM', angle: -90, position: 'insideLeft' }}
+                    label={{ 
+                      value: 'CFM', 
+                      angle: -90, 
+                      position: 'outside',
+                      style: { textAnchor: 'middle' },
+                      offset: -40
+                    }}
                   />
                   <Tooltip 
                     formatter={(value, name) => [Number(value).toLocaleString(), name]}
                     labelFormatter={(label) => `${label}" Diameter`}
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        const intersection = intersectionPoints.find(
+                          int => Math.abs(int.diameter - Number(label)) < 1
+                        );
+                        return (
+                          <div className="bg-white p-3 border rounded shadow-lg">
+                            <p className="font-medium">{`${label}" Diameter`}</p>
+                            {payload.map((entry, index) => (
+                              <p key={index} style={{ color: entry.color }}>
+                                {`${entry.name}: ${Number(entry.value).toLocaleString()}`}
+                              </p>
+                            ))}
+                            {intersection && (
+                              <p className="font-medium text-green-600 mt-2">
+                                ⚬ Intersection: {intersection.cfm.toLocaleString()} CFM
+                              </p>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '30px', paddingBottom: '10px' }} />
                   <Line 
                     type="monotone" 
                     dataKey="Velocity CFM" 
@@ -207,9 +268,37 @@ export default function HVACCalculator() {
                     strokeWidth={2}
                     dot={{ fill: '#dc2626', strokeWidth: 2, r: 4 }}
                   />
+                  {/* Mark intersection points */}
+                  {intersectionPoints.map((intersection, index) => (
+                    <ReferenceDot
+                      key={`intersection-${index}`}
+                      x={intersection.diameter}
+                      y={intersection.cfm}
+                      r={8}
+                      fill="#10b981"
+                      stroke="#ffffff"
+                      strokeWidth={3}
+                    />
+                  ))}
                 </LineChart>
               </ResponsiveContainer>
             </div>
+            {/* Display intersection information */}
+            {intersectionPoints.length > 0 && (
+              <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="font-medium text-green-800">Intersection Points</span>
+                </div>
+                <div className="text-sm text-green-700 space-y-1">
+                  {intersectionPoints.map((intersection, index) => (
+                    <div key={index}>
+                      At {intersection.diameter}" diameter: {intersection.cfm.toLocaleString()} CFM
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <Separator />
