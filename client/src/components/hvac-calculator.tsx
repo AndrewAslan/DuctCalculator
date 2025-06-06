@@ -223,7 +223,7 @@ export default function HVACCalculator() {
                       angle: -90, 
                       position: 'outside',
                       style: { textAnchor: 'middle' },
-                      offset: -80
+                      offset: -120
                     }}
                   />
                   <Tooltip 
