@@ -1,16 +1,13 @@
 export interface HVACInputs {
   velocity: number;
   friction: number;
-}
-
-export interface HVACTableRow {
   cfm: number;
-  [key: string]: number; // Allow dynamic diameter properties
 }
 
 export interface HVACResults {
-  velocityBasedTable: HVACTableRow[];
-  frictionBasedTable: HVACTableRow[];
+  cfm: number;
+  diameterVelocity: number;
+  diameterFriction: number;
   timestamp: string;
 }
 
@@ -83,74 +80,38 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
     }
   }
   
-
+  if (inputs.cfm !== undefined) {
+    if (inputs.cfm < 100 || inputs.cfm > 55100) {
+      errors.push("CFM should be between 100-55100");
+    }
+  }
   
   return errors;
 }
 
 /**
- * Generate CFM options for the table (100, 600, 1100, 1600... up to 55,100)
- */
-export function generateCFMOptions(): number[] {
-  const cfmOptions: number[] = [];
-  for (let i = 100; i <= 55100; i += 500) {
-    cfmOptions.push(i);
-  }
-  return cfmOptions;
-}
-
-/**
- * Generate duct diameter options (4, 6, 8... up to 60 inches)
- */
-export function generateDiameterOptions(): number[] {
-  const diameterOptions: number[] = [];
-  for (let diameter = 4; diameter <= 60; diameter += 2) {
-    diameterOptions.push(diameter);
-  }
-  return diameterOptions;
-}
-
-/**
- * Calculate required diameter for given velocity and CFM using the same formula as before
- */
-export function calculateRequiredDiameterVelocity(velocity: number, cfm: number): number {
-  return calculateDiameterFromVelocity(velocity, cfm);
-}
-
-/**
- * Calculate required diameter for given friction and CFM using the same Excel formula as before
- */
-export function calculateRequiredDiameterFriction(friction: number, cfm: number): number {
-  return calculateDiameterFromFriction(friction, cfm);
-}
-
-/**
- * Calculate all HVAC results based on inputs - using the same calculations as before
+ * Calculate all HVAC results based on inputs
  */
 export function calculateHVACResults(inputs: HVACInputs): HVACResults {
-  const cfmOptions = generateCFMOptions();
+  const { velocity, friction, cfm } = inputs;
   
-  // For velocity table: show the calculated diameter for each CFM using velocity formula
-  const velocityBasedTable: HVACTableRow[] = cfmOptions.map(cfm => {
-    const calculatedDiameter = calculateDiameterFromVelocity(inputs.velocity, cfm);
-    return {
-      cfm,
-      calculatedDiameter
-    };
-  });
-
-  // For friction table: show the calculated diameter for each CFM using friction formula
-  const frictionBasedTable: HVACTableRow[] = cfmOptions.map(cfm => {
-    const calculatedDiameter = calculateDiameterFromFriction(inputs.friction, cfm);
-    return {
-      cfm,
-      calculatedDiameter
-    };
-  });
+  let diameterVelocity = 0;
+  let diameterFriction = 0;
+  
+  // Calculate diameter based on velocity and CFM
+  if (velocity > 0 && cfm > 0) {
+    diameterVelocity = calculateDiameterFromVelocity(velocity, cfm);
+  }
+  
+  // Calculate diameter based on friction and CFM
+  if (friction > 0 && cfm > 0) {
+    diameterFriction = calculateDiameterFromFriction(friction, cfm);
+  }
   
   return {
-    velocityBasedTable,
-    frictionBasedTable,
-    timestamp: new Date().toISOString()
+    cfm,
+    diameterVelocity,
+    diameterFriction,
+    timestamp: new Date().toLocaleTimeString()
   };
 }
