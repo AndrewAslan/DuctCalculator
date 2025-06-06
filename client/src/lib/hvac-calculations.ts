@@ -5,35 +5,7 @@ export interface HVACInputs {
 
 export interface HVACTableRow {
   cfm: number;
-  diameter4: number;
-  diameter6: number;
-  diameter8: number;
-  diameter10: number;
-  diameter12: number;
-  diameter14: number;
-  diameter16: number;
-  diameter18: number;
-  diameter20: number;
-  diameter22: number;
-  diameter24: number;
-  diameter26: number;
-  diameter28: number;
-  diameter30: number;
-  diameter32: number;
-  diameter34: number;
-  diameter36: number;
-  diameter38: number;
-  diameter40: number;
-  diameter42: number;
-  diameter44: number;
-  diameter46: number;
-  diameter48: number;
-  diameter50: number;
-  diameter52: number;
-  diameter54: number;
-  diameter56: number;
-  diameter58: number;
-  diameter60: number;
+  [key: string]: number; // Allow dynamic diameter properties
 }
 
 export interface HVACResults {
