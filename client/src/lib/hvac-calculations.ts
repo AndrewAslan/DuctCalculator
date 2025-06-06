@@ -91,14 +91,34 @@ export function validateHVACInputs(inputs: Partial<HVACInputs>): string[] {
 
 /**
  * Calculate CFM based on friction limit and duct diameter
- * Derived from the friction formula: friction = (0.109136 * CFM^1.9) / diameter^5.02
+ * Derived from Excel friction formula: diameter = EVEN(((0.109136*CFM^1.9)/friction)^(1/5.02))
  * Solving for CFM: CFM = ((friction * diameter^5.02) / 0.109136)^(1/1.9)
  */
 export function calculateCFMFromFriction(friction: number, diameter: number): number {
   if (friction <= 0 || diameter <= 0) return 0;
   
-  // CFM = ((friction * diameter^5.02) / 0.109136)^(1/1.9)
+  // Reverse the Excel formula: diameter = ((0.109136*CFM^1.9)/friction)^(1/5.02)
+  // Solving for CFM: CFM = ((friction * diameter^5.02) / 0.109136)^(1/1.9)
   const cfm = Math.pow((friction * Math.pow(diameter, 5.02)) / 0.109136, 1/1.9);
+  return cfm;
+}
+
+/**
+ * Calculate CFM based on velocity limit and duct diameter
+ * Exactly matching Excel formula: diameter = EVEN(SQRT((CFM/3.14159)*4)/velocity*12)
+ * Rearranging for CFM: CFM = PI * (diameter * velocity / 12)^2 / 4
+ */
+export function calculateCFMFromVelocity(velocity: number, diameter: number): number {
+  if (velocity <= 0 || diameter <= 0) return 0;
+  
+  // From Excel: diameter = SQRT((CFM/PI)*4)/velocity*12
+  // Rearranging step by step:
+  // diameter = SQRT((CFM/PI)*4) / velocity * 12
+  // diameter * velocity / 12 = SQRT((CFM/PI)*4)
+  // (diameter * velocity / 12)^2 = (CFM/PI)*4
+  // CFM = PI * (diameter * velocity / 12)^2 / 4
+  
+  const cfm = Math.PI * Math.pow(diameter * velocity / 12, 2) / 4;
   return cfm;
 }
 

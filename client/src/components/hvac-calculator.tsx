@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Calculator, Wind, Ruler } from "lucide-react";
-import { calculateCFM, calculateCFMFromFriction } from "@/lib/hvac-calculations";
+import { calculateCFMFromVelocity, calculateCFMFromFriction } from "@/lib/hvac-calculations";
 
 export default function HVACCalculator() {
-  const [velocityLimit, setVelocityLimit] = useState<number>(1000);
-  const [frictionLimit, setFrictionLimit] = useState<number>(0.08);
+  const [velocityLimit, setVelocityLimit] = useState<number>(2500);
+  const [frictionLimit, setFrictionLimit] = useState<number>(0.15);
   const [calculationType, setCalculationType] = useState<'velocity' | 'friction'>('velocity');
 
   // Generate duct diameters from 4 to 60 in increments of 2
@@ -26,7 +26,7 @@ export default function HVACCalculator() {
   // Calculate CFM values for each diameter
   const cfmCalculations = useMemo(() => {
     return ductDiameters.map(diameter => {
-      const velocityCFM = calculateCFM(velocityLimit, diameter);
+      const velocityCFM = calculateCFMFromVelocity(velocityLimit, diameter);
       const frictionCFM = calculateCFMFromFriction(frictionLimit, diameter);
       return {
         diameter,
