@@ -211,11 +211,12 @@ export default function HVACCalculator() {
                     dataKey="diameter" 
                     label={{ 
                       value: 'Duct Diameter (inches)', 
-                      position: 'insideBottom', 
+                      position: 'insideBottomLeft', 
                       offset: -40,
-                      textAnchor: 'middle'
+                      dx: 150
                     }}
                     tick={{ dy: 15 }}
+                    axisLine={{ stroke: '#374151' }}
                   />
                   <YAxis 
                     label={{ 
