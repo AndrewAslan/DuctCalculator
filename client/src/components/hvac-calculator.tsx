@@ -221,9 +221,9 @@ export default function HVACCalculator() {
                     label={{ 
                       value: 'CFM', 
                       angle: -90, 
-                      position: 'outside',
+                      position: 'insideLeft',
                       style: { textAnchor: 'middle' },
-                      offset: -120
+                      offset: -50
                     }}
                   />
                   <Tooltip 
