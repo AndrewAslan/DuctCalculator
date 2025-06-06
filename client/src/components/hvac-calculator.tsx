@@ -32,60 +32,74 @@ export default function HVACCalculator() {
       const frictionCFM = calculateCFMFromFriction(frictionLimit, diameter);
       return {
         diameter,
-        velocityCFM: Math.round(velocityCFM),
-        frictionCFM: Math.round(frictionCFM)
+        velocityCFM: Math.round(Math.max(0, velocityCFM)), // Ensure no negative values
+        frictionCFM: Math.round(Math.max(0, frictionCFM))  // Ensure no negative values
       };
     });
   }, [ductDiameters, velocityLimit, frictionLimit]);
 
+  // Validate input values
+  const isValidVelocity = velocityLimit > 0 && velocityLimit <= 5000;
+  const isValidFriction = frictionLimit > 0 && frictionLimit <= 1.0;
+
   // Export table data to PDF
   const exportToPDF = () => {
-    const doc = new jsPDF();
+    if (!isValidVelocity || !isValidFriction) {
+      alert('Please enter valid velocity (1-5000 FPM) and friction (0.01-1.0) values before exporting.');
+      return;
+    }
     
-    // Add title
-    doc.setFontSize(16);
-    doc.text('HVAC Ductwork CFM Calculator Report', 20, 20);
-    
-    // Add parameters
-    doc.setFontSize(10);
-    doc.text(`Velocity Limit: ${velocityLimit} FPM`, 20, 35);
-    doc.text(`Friction Limit: ${frictionLimit} in w.g./100 ft`, 20, 45);
-    doc.text(`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 55);
-    
-    // Prepare table data
-    const tableHeaders = ['Diameter (inches)', 'Velocity-Based Max CFM', 'Friction-Based Max CFM'];
-    const tableData = cfmCalculations.map(calc => [
-      `${calc.diameter}"`,
-      calc.velocityCFM.toLocaleString(),
-      calc.frictionCFM.toLocaleString()
-    ]);
-    
-    // Generate table
-    autoTable(doc, {
-      head: [tableHeaders],
-      body: tableData,
-      startY: 65,
-      styles: {
-        fontSize: 8,
-        cellPadding: 3,
-      },
-      headStyles: {
-        fillColor: [59, 130, 246], // Blue background
-        textColor: 255,
-        fontStyle: 'bold',
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252], // Light gray
-      },
-      columnStyles: {
-        0: { halign: 'center' },
-        1: { halign: 'right' },
-        2: { halign: 'right' },
-      },
-    });
-    
-    // Save the PDF
-    doc.save(`HVAC-Ductwork-Calculator-${new Date().toISOString().split('T')[0]}.pdf`);
+    try {
+      const doc = new jsPDF();
+      
+      // Add title
+      doc.setFontSize(16);
+      doc.text('HVAC Ductwork CFM Calculator Report', 20, 20);
+      
+      // Add parameters
+      doc.setFontSize(10);
+      doc.text(`Velocity Limit: ${velocityLimit} FPM`, 20, 35);
+      doc.text(`Friction Limit: ${frictionLimit} in w.g./100 ft`, 20, 45);
+      doc.text(`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 55);
+      
+      // Prepare table data
+      const tableHeaders = ['Diameter (inches)', 'Velocity-Based Max CFM', 'Friction-Based Max CFM'];
+      const tableData = cfmCalculations.map(calc => [
+        `${calc.diameter}"`,
+        calc.velocityCFM.toLocaleString(),
+        calc.frictionCFM.toLocaleString()
+      ]);
+      
+      // Generate table
+      autoTable(doc, {
+        head: [tableHeaders],
+        body: tableData,
+        startY: 65,
+        styles: {
+          fontSize: 8,
+          cellPadding: 3,
+        },
+        headStyles: {
+          fillColor: [59, 130, 246], // Blue background
+          textColor: 255,
+          fontStyle: 'bold',
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252], // Light gray
+        },
+        columnStyles: {
+          0: { halign: 'center' },
+          1: { halign: 'right' },
+          2: { halign: 'right' },
+        },
+      });
+      
+      // Save the PDF
+      doc.save(`HVAC-Ductwork-Calculator-${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('PDF export error:', error);
+      alert('There was an error generating the PDF. Please try again.');
+    }
   };
 
   return (
@@ -116,7 +130,7 @@ export default function HVACCalculator() {
                 min="100"
                 max="5000"
                 step="50"
-                className="text-center"
+                className={`text-center ${!isValidVelocity ? 'border-red-500' : ''}`}
               />
             </div>
             
@@ -133,7 +147,7 @@ export default function HVACCalculator() {
                 min="0.01"
                 max="1.0"
                 step="0.01"
-                className="text-center"
+                className={`text-center ${!isValidFriction ? 'border-red-500' : ''}`}
               />
             </div>
 
