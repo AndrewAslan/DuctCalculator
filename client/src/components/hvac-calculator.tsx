@@ -92,51 +92,129 @@ export default function HVACCalculator() {
     
     try {
       const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
       
-      // Add title
-      doc.setFontSize(16);
-      doc.text('HVAC Ductwork CFM Calculator Report', 20, 20);
+      // Header with company logo space
+      doc.setFillColor(59, 130, 246);
+      doc.rect(0, 0, pageWidth, 25, 'F');
       
-      // Add parameters
+      // Title
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(18);
+      doc.setFont(undefined, 'bold');
+      doc.text('HVAC DUCTWORK CFM CALCULATOR REPORT', pageWidth / 2, 16, { align: 'center' });
+      
+      // Company logo placeholder
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(8);
+      doc.text('Company Logo Space', 15, 8);
+      doc.rect(10, 3, 50, 15);
+      
+      // Project information section
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('Project Information', 20, 40);
+      
       doc.setFontSize(10);
-      doc.text(`Velocity Limit: ${velocityLimit} FPM`, 20, 35);
-      doc.text(`Friction Limit: ${frictionLimit} in w.g./100 ft`, 20, 45);
-      doc.text(`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 55);
+      doc.setFont(undefined, 'normal');
+      doc.text('Project Name: ________________________________', 20, 50);
+      doc.text('Engineer: ____________________________________', 20, 58);
+      doc.text('Date: ________________________________________', 20, 66);
+      doc.text('Job Number: __________________________________', 20, 74);
       
-      // Prepare table data
-      const tableHeaders = ['Diameter (inches)', 'Velocity-Based Max CFM', 'Friction-Based Max CFM'];
-      const tableData = cfmCalculations.map(calc => [
-        `${calc.diameter}"`,
-        calc.velocityCFM.toLocaleString(),
-        calc.frictionCFM.toLocaleString()
-      ]);
+      // Calculation parameters
+      doc.setFontSize(14);
+      doc.setFont(undefined, 'bold');
+      doc.text('Calculation Parameters', 20, 90);
       
-      // Generate table
+      doc.setFontSize(10);
+      doc.setFont(undefined, 'normal');
+      doc.text(`Velocity Limit: ${velocityLimit} FPM`, 20, 100);
+      doc.text(`Friction Limit: ${frictionLimit} in w.g./100 ft`, 20, 108);
+      doc.text(`Generated: ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}`, 20, 116);
+      doc.text(`Velocity CFM Adjustment: -0.007% or minimum 1 CFM (whichever is larger)`, 20, 124);
+      
+      // Intersection points summary
+      if (intersectionPoints.length > 0) {
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'bold');
+        doc.text('Intersection Points (Equal CFM)', 20, 140);
+        
+        doc.setFontSize(10);
+        doc.setFont(undefined, 'normal');
+        intersectionPoints.forEach((intersection, index) => {
+          doc.text(`• At ${intersection.diameter}" diameter: ${intersection.cfm.toLocaleString()} CFM`, 25, 148 + (index * 8));
+        });
+      }
+      
+      // CFM table
+      const tableStartY = intersectionPoints.length > 0 ? 170 : 150;
+      
+      doc.setFontSize(12);
+      doc.setFont(undefined, 'bold');
+      doc.text('CFM Calculations by Duct Diameter', 20, tableStartY - 5);
+      
+      // Prepare enhanced table data
+      const tableHeaders = ['Diameter\n(inches)', 'Velocity CFM\n(Adjusted)', 'Friction CFM\n(Standard)', 'Difference\n(CFM)', 'Recommended\n(Lower CFM)'];
+      const tableData = cfmCalculations.map(calc => {
+        const difference = Math.abs(calc.velocityCFM - calc.frictionCFM);
+        const recommended = Math.min(calc.velocityCFM, calc.frictionCFM);
+        return [
+          `${calc.diameter}"`,
+          calc.velocityCFM.toLocaleString(),
+          calc.frictionCFM.toLocaleString(),
+          difference.toLocaleString(),
+          recommended.toLocaleString()
+        ];
+      });
+      
+      // Generate enhanced table
       autoTable(doc, {
         head: [tableHeaders],
         body: tableData,
-        startY: 65,
+        startY: tableStartY,
         styles: {
           fontSize: 8,
-          cellPadding: 3,
+          cellPadding: 2,
+          lineWidth: 0.1,
+          lineColor: [128, 128, 128]
         },
         headStyles: {
-          fillColor: [59, 130, 246], // Blue background
+          fillColor: [59, 130, 246],
           textColor: 255,
           fontStyle: 'bold',
+          halign: 'center'
+        },
+        bodyStyles: {
+          halign: 'center'
         },
         alternateRowStyles: {
-          fillColor: [248, 250, 252], // Light gray
+          fillColor: [248, 250, 252]
         },
         columnStyles: {
-          0: { halign: 'center' },
-          1: { halign: 'right' },
-          2: { halign: 'right' },
-        },
+          0: { cellWidth: 25 },
+          1: { cellWidth: 30 },
+          2: { cellWidth: 30 },
+          3: { cellWidth: 25 },
+          4: { cellWidth: 35, fillColor: [220, 252, 231] } // Highlight recommended column
+        }
       });
       
-      // Save the PDF
-      doc.save(`HVAC-Ductwork-Calculator-${new Date().toISOString().split('T')[0]}.pdf`);
+      // Footer
+      const finalY = (doc as any).lastAutoTable?.finalY || tableStartY + 100;
+      if (finalY < pageHeight - 40) {
+        doc.setFontSize(8);
+        doc.setTextColor(128, 128, 128);
+        doc.text('This report was generated by HVAC Ductwork CFM Calculator', pageWidth / 2, pageHeight - 20, { align: 'center' });
+        doc.text('Calculations based on standard ASHRAE formulas', pageWidth / 2, pageHeight - 15, { align: 'center' });
+        doc.text('Note: Velocity CFM values include 0.007% reduction for practical sizing', pageWidth / 2, pageHeight - 10, { align: 'center' });
+      }
+      
+      // Save with descriptive filename
+      const timestamp = new Date().toISOString().split('T')[0];
+      doc.save(`HVAC_CFM_Calculator_Report_${timestamp}.pdf`);
     } catch (error) {
       console.error('PDF export error:', error);
       alert('There was an error generating the PDF. Please try again.');
