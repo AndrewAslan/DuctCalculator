@@ -56,26 +56,53 @@ export default function HVACCalculator() {
   // Find intersection points where velocity and friction CFM lines cross
   const intersectionPoints = useMemo(() => {
     const intersections: Array<{ diameter: number; cfm: number }> = [];
+    
+    // Check each adjacent pair of points for line crossings
     for (let i = 0; i < cfmCalculations.length - 1; i++) {
       const current = cfmCalculations[i];
       const next = cfmCalculations[i + 1];
       
-      // Check if lines cross between these two points
-      const velocityDiff1 = current.velocityCFM - current.frictionCFM;
-      const velocityDiff2 = next.velocityCFM - next.frictionCFM;
+      // Calculate the difference between velocity and friction CFM at each point
+      const diff1 = current.velocityCFM - current.frictionCFM;
+      const diff2 = next.velocityCFM - next.frictionCFM;
       
-      if (velocityDiff1 * velocityDiff2 < 0) { // Sign change indicates crossing
-        // Interpolate intersection point
-        const ratio = Math.abs(velocityDiff1) / (Math.abs(velocityDiff1) + Math.abs(velocityDiff2));
+      // If the sign changes, the lines cross between these points
+      if ((diff1 > 0 && diff2 < 0) || (diff1 < 0 && diff2 > 0)) {
+        // Linear interpolation to find exact intersection point
+        const totalDiff = Math.abs(diff1) + Math.abs(diff2);
+        const ratio = Math.abs(diff1) / totalDiff;
+        
         const intersectionDiameter = current.diameter + (next.diameter - current.diameter) * ratio;
         const intersectionCFM = current.velocityCFM + (next.velocityCFM - current.velocityCFM) * ratio;
         
         intersections.push({
-          diameter: Math.round(intersectionDiameter * 10) / 10,
+          diameter: Math.round(intersectionDiameter * 2) / 2, // Round to nearest 0.5
           cfm: Math.round(intersectionCFM)
         });
       }
     }
+    
+    // If no intersection found, find the closest points (they might be very close)
+    if (intersections.length === 0) {
+      let minDiff = Infinity;
+      let closestPoint = { diameter: 0, cfm: 0 };
+      
+      cfmCalculations.forEach(calc => {
+        const diff = Math.abs(calc.velocityCFM - calc.frictionCFM);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestPoint = {
+            diameter: calc.diameter,
+            cfm: Math.round((calc.velocityCFM + calc.frictionCFM) / 2)
+          };
+        }
+      });
+      
+      if (minDiff < 1000) { // If lines are close (within 1000 CFM)
+        intersections.push(closestPoint);
+      }
+    }
+    
     return intersections;
   }, [cfmCalculations]);
 
@@ -274,31 +301,51 @@ export default function HVACCalculator() {
                       key={`intersection-${index}`}
                       x={intersection.diameter}
                       y={intersection.cfm}
-                      r={8}
+                      r={10}
                       fill="#10b981"
-                      stroke="#ffffff"
+                      stroke="#065f46"
+                      strokeWidth={2}
+                      fillOpacity={0.9}
+                    />
+                  ))}
+                  {/* Add a larger outer ring for better visibility */}
+                  {intersectionPoints.map((intersection, index) => (
+                    <ReferenceDot
+                      key={`intersection-ring-${index}`}
+                      x={intersection.diameter}
+                      y={intersection.cfm}
+                      r={14}
+                      fill="none"
+                      stroke="#10b981"
                       strokeWidth={3}
+                      fillOpacity={0}
                     />
                   ))}
                 </LineChart>
               </ResponsiveContainer>
             </div>
             {/* Display intersection information */}
-            {intersectionPoints.length > 0 && (
-              <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="font-medium text-green-800">Intersection Points</span>
-                </div>
-                <div className="text-sm text-green-700 space-y-1">
-                  {intersectionPoints.map((intersection, index) => (
+            <div className="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="font-medium text-green-800">
+                  {intersectionPoints.length > 0 ? 'Intersection Points' : 'Finding Intersection...'}
+                </span>
+              </div>
+              <div className="text-sm text-green-700 space-y-1">
+                {intersectionPoints.length > 0 ? (
+                  intersectionPoints.map((intersection, index) => (
                     <div key={index}>
                       At {intersection.diameter}" diameter: {intersection.cfm.toLocaleString()} CFM
                     </div>
-                  ))}
-                </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500">
+                    Checking {cfmCalculations.length} data points for line crossing...
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <Separator />
