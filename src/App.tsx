@@ -1,24 +1,12 @@
-import { Switch, Route } from "wouter";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import Home from "@/pages/home";
-import NotFound from "@/pages/not-found";
-
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
+import HVACCalculator from "@/components/hvac-calculator";
 
 function App() {
   return (
-    <TooltipProvider>
-      <Toaster />
-      <Router />
-    </TooltipProvider>
+    <div className="min-h-screen bg-background">
+      <main className="container mx-auto px-4 py-8 max-w-7xl">
+        <HVACCalculator />
+      </main>
+    </div>
   );
 }
 
