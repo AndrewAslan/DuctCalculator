@@ -216,13 +216,14 @@ export default function HVACCalculator() {
       <Card>
         <CardHeader>
           <div className="flex justify-center mb-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-start gap-4">
               <div 
                 className="text-black font-light tracking-wide"
                 style={{ 
                   fontFamily: 'Arial, sans-serif', 
                   fontSize: '28px',
-                  fontWeight: '300'
+                  fontWeight: '300',
+                  marginTop: '-8px'
                 }}
               >
                 pragmatic
