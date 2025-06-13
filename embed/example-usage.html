@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Calculator Embedding Examples</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .example-section {
+            margin: 40px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .code-example {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        pre {
+            margin: 0;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .widget-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>HVAC Calculator Embedding Examples</h1>
+    <p>This page demonstrates different ways to embed the HVAC Calculator widget on your website.</p>
+
+    <!-- Method 1: iframe Embedding -->
+    <div class="example-section">
+        <h2>Method 1: iframe Embedding (Simplest)</h2>
+        <p>Perfect for when your calculator is hosted on Vercel and you want to embed it anywhere:</p>
+        
+        <div class="code-example">
+            <pre>&lt;iframe 
+  src="https://your-app-name.vercel.app" 
+  width="100%" 
+  height="800"
+  frameborder="0"
+  style="border: none; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"&gt;
+&lt;/iframe&gt;</pre>
+        </div>
+        
+        <div class="widget-container">
+            <p><strong>Live Example:</strong> (Replace with your actual Vercel URL)</p>
+            <div style="height: 200px; background: #e9e9e9; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+                iframe would appear here with your deployed calculator
+            </div>
+        </div>
+    </div>
+
+    <!-- Method 2: JavaScript Widget -->
+    <div class="example-section">
+        <h2>Method 2: JavaScript Widget (Most Flexible)</h2>
+        <p>Include the widget script and initialize with custom options:</p>
+        
+        <div class="code-example">
+            <pre>&lt;!-- Include the widget script --&gt;
+&lt;script src="path/to/hvac-calculator-widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- Create container --&gt;
+&lt;div id="my-hvac-calculator"&gt;&lt;/div&gt;
+
+&lt;!-- Initialize widget --&gt;
+&lt;script&gt;
+new HVACCalculatorWidget('my-hvac-calculator', {
+    width: '100%',
+    maxWidth: '1000px',
+    initialVelocity: 2500,
+    initialFriction: 0.15,
+    showHeader: true,
+    showTable: true
+});
+&lt;/script&gt;</pre>
+        </div>
+        
+        <div class="widget-container">
+            <div id="hvac-calculator-demo"></div>
+        </div>
+    </div>
+
+    <!-- Method 3: Auto-initialization -->
+    <div class="example-section">
+        <h2>Method 3: Auto-initialization with Data Attributes</h2>
+        <p>The easiest way - just add data attributes and the widget initializes automatically:</p>
+        
+        <div class="code-example">
+            <pre>&lt;!-- Include the widget script --&gt;
+&lt;script src="path/to/hvac-calculator-widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- Widget will auto-initialize --&gt;
+&lt;div id="auto-hvac-calc" 
+     data-hvac-calculator
+     data-velocity="3000"
+     data-friction="0.12"
+     data-width="90%"
+     data-show-header="true"&gt;
+&lt;/div&gt;</pre>
+        </div>
+        
+        <div class="widget-container">
+            <div id="auto-hvac-calc" 
+                 data-hvac-calculator
+                 data-velocity="3000"
+                 data-friction="0.12"
+                 data-show-header="false">
+            </div>
+        </div>
+    </div>
+
+    <!-- Method 4: WordPress Shortcode -->
+    <div class="example-section">
+        <h2>Method 4: WordPress Plugin</h2>
+        <p>For WordPress sites, use the provided plugin and shortcodes:</p>
+        
+        <div class="code-example">
+            <pre>[hvac_calculator]
+
+[hvac_calculator velocity="3000" friction="0.12" width="80%"]
+
+[hvac_calculator show_header="false" show_table="true"]</pre>
+        </div>
+        
+        <p><strong>Plugin Installation:</strong></p>
+        <ol>
+            <li>Upload the <code>wordpress-plugin</code> folder to <code>/wp-content/plugins/</code></li>
+            <li>Activate the plugin in WordPress admin</li>
+            <li>Use shortcodes in posts/pages</li>
+        </ol>
+    </div>
+
+    <!-- Method 5: Standalone HTML -->
+    <div class="example-section">
+        <h2>Method 5: Standalone HTML File</h2>
+        <p>Use the complete standalone HTML file for direct hosting:</p>
+        
+        <div class="code-example">
+            <pre>&lt;!-- Simply upload hvac-calculator-embed.html to your server --&gt;
+&lt;a href="hvac-calculator-embed.html" target="_blank"&gt;Open Calculator&lt;/a&gt;
+
+&lt;!-- Or embed in iframe --&gt;
+&lt;iframe src="hvac-calculator-embed.html" width="100%" height="800"&gt;&lt;/iframe&gt;</pre>
+        </div>
+    </div>
+
+    <!-- Configuration Options -->
+    <div class="example-section">
+        <h2>Configuration Options</h2>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #f0f0f0;">
+                    <th style="padding: 10px; border: 1px solid #ddd;">Option</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Description</th>
+                    <th style="padding: 10px; border: 1px solid #ddd;">Default</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>width</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Widget width</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">100%</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>maxWidth</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Maximum width</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">1200px</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>initialVelocity</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Starting velocity value</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">2500</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>initialFriction</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Starting friction value</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">0.15</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>showHeader</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Show title header</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">true</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;"><code>showTable</code></td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Show results table</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">true</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Include the widget script for demos -->
+    <script src="hvac-calculator-widget.js"></script>
+    
+    <script>
+        // Initialize the demo widget
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof HVACCalculatorWidget !== 'undefined') {
+                new HVACCalculatorWidget('hvac-calculator-demo', {
+                    width: '100%',
+                    maxWidth: '800px',
+                    showHeader: false,
+                    initialVelocity: 2000,
+                    initialFriction: 0.10
+                });
+            }
+        });
+    </script>
+</body>
+</html>
