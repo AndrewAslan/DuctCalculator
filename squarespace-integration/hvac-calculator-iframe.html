@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Duct CFM Calculator</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@latest/dist/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .calculator-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #ffffff;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #60a5fa 100%);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.15);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 16px;
+        }
+        
+        .header .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .inputs-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .input-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .input-hint {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 4px;
+            text-align: center;
+        }
+        
+        .results-section {
+            margin: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section-title::before {
+            content: '📊';
+            font-size: 1.8rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        
+        .chart-container {
+            height: 350px;
+            width: 100%;
+            margin: 20px 0;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 24px 0;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin: 20px 0;
+        }
+        
+        .results-table th {
+            background: #3b82f6;
+            color: white;
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .results-table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            font-weight: 500;
+        }
+        
+        .results-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .results-table tr:hover {
+            background: #e0f2fe;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .inputs-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+                padding: 20px;
+            }
+            
+            .chart-container {
+                height: 280px;
+                padding: 15px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .results-table {
+                font-size: 0.9rem;
+            }
+            
+            .results-table th,
+            .results-table td {
+                padding: 8px 6px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                height: 250px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <div class="header">
+            <h1>HVAC Duct CFM Calculator</h1>
+            <p>Professional Engineering Calculations</p>
+            <div class="badge">Professional Tool</div>
+        </div>
+        
+        <div id="calculator-root"></div>
+    </div>
+    
+    <script>
+        const { useState, useMemo } = React;
+        const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } = Recharts;
+        
+        // HVAC Calculation Functions
+        function calculateCFMFromVelocity(velocity, diameter) {
+            const radiusFeet = (diameter / 12) / 2;
+            const areaSquareFeet = Math.PI * Math.pow(radiusFeet, 2);
+            return areaSquareFeet * velocity;
+        }
+        
+        function calculateCFMFromFriction(friction, diameter) {
+            const power = 1 / 1.9;
+            const numerator = friction * Math.pow(diameter, 5.02);
+            const cfm = Math.pow(numerator / 0.109136, power);
+            return Math.max(0, cfm);
+        }
+        
+        function HVACCalculator() {
+            const [velocityLimit, setVelocityLimit] = useState(2500);
+            const [frictionLimit, setFrictionLimit] = useState(0.15);
+            
+            // Generate duct diameters
+            const ductDiameters = useMemo(() => {
+                const diameters = [];
+                for (let diameter = 4; diameter <= 60; diameter += 2) {
+                    diameters.push(diameter);
+                }
+                return diameters;
+            }, []);
+            
+            // Calculate CFM values
+            const cfmCalculations = useMemo(() => {
+                return ductDiameters.map(diameter => {
+                    const velocityCFM = calculateCFMFromVelocity(velocityLimit, diameter);
+                    const frictionCFM = calculateCFMFromFriction(frictionLimit, diameter);
+                    
+                    return {
+                        diameter,
+                        velocityCFM: Math.round(Math.max(0, velocityCFM)),
+                        frictionCFM: Math.round(Math.max(0, frictionCFM)),
+                        difference: Math.round(Math.abs(velocityCFM - frictionCFM))
+                    };
+                });
+            }, [ductDiameters, velocityLimit, frictionLimit]);
+            
+            // Chart data
+            const chartData = useMemo(() => {
+                return cfmCalculations.map(calc => ({
+                    diameter: calc.diameter,
+                    "Velocity CFM": calc.velocityCFM,
+                    "Friction CFM": calc.frictionCFM
+                }));
+            }, [cfmCalculations]);
+            
+            // Find optimal diameter
+            const optimalDiameter = useMemo(() => {
+                let minDifference = Infinity;
+                let optimal = 4;
+                
+                cfmCalculations.forEach(result => {
+                    if (result.difference < minDifference) {
+                        minDifference = result.difference;
+                        optimal = result.diameter;
+                    }
+                });
+                
+                return optimal;
+            }, [cfmCalculations]);
+            
+            // Export to PDF
+            const exportToPDF = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Header
+                doc.setFillColor(59, 130, 246);
+                doc.rect(0, 0, doc.internal.pageSize.width, 25, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(18);
+                doc.setFont('helvetica', 'bold');
+                doc.text('HVAC Duct CFM Calculator Report', doc.internal.pageSize.width / 2, 16, { align: 'center' });
+                
+                // Parameters
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(12);
+                doc.text(`Velocity Limit: ${velocityLimit} FPM`, 20, 40);
+                doc.text(`Friction Limit: ${frictionLimit} in w.g./100 ft`, 20, 50);
+                doc.text(`Optimal Diameter: ${optimalDiameter}" (Best CFM balance)`, 20, 60);
+                doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, 70);
+                
+                // Table data
+                const tableData = cfmCalculations.slice(0, 20).map(calc => [
+                    `${calc.diameter}"`,
+                    calc.velocityCFM.toLocaleString(),
+                    calc.frictionCFM.toLocaleString(),
+                    calc.difference.toLocaleString()
+                ]);
+                
+                doc.autoTable({
+                    head: [['Diameter', 'Velocity CFM', 'Friction CFM', 'Difference']],
+                    body: tableData,
+                    startY: 80,
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [59, 130, 246] }
+                });
+                
+                doc.save(`HVAC_Calculator_Report_${new Date().toISOString().split('T')[0]}.pdf`);
+            };
+            
+            const maxVelocityCFM = Math.max(...cfmCalculations.map(r => r.velocityCFM));
+            const maxFrictionCFM = Math.max(...cfmCalculations.map(r => r.frictionCFM));
+            
+            return React.createElement('div', null,
+                React.createElement('div', { className: 'inputs-section' },
+                    React.createElement('div', { className: 'input-group' },
+                        React.createElement('label', { className: 'input-label' }, 'Velocity Limit (FPM)'),
+                        React.createElement('input', {
+                            type: 'number',
+                            className: 'input-field',
+                            value: velocityLimit,
+                            onChange: (e) => setVelocityLimit(Number(e.target.value)),
+                            min: 100,
+                            max: 5000,
+                            step: 50
+                        }),
+                        React.createElement('div', { className: 'input-hint' }, 'Recommended: 500-3000 FPM')
+                    ),
+                    React.createElement('div', { className: 'input-group' },
+                        React.createElement('label', { className: 'input-label' }, 'Friction Limit (in w.g./100 ft)'),
+                        React.createElement('input', {
+                            type: 'number',
+                            className: 'input-field',
+                            value: frictionLimit,
+                            onChange: (e) => setFrictionLimit(Number(e.target.value)),
+                            min: 0.01,
+                            max: 1.0,
+                            step: 0.01
+                        }),
+                        React.createElement('div', { className: 'input-hint' }, 'Recommended: 0.08-0.15 in w.g./100 ft')
+                    )
+                ),
+                
+                React.createElement('div', { className: 'results-section' },
+                    React.createElement('h3', { className: 'section-title' }, 'Analysis Results'),
+                    
+                    React.createElement('div', { className: 'stats-grid' },
+                        React.createElement('div', { className: 'stat-card' },
+                            React.createElement('div', { className: 'stat-value' }, maxVelocityCFM.toLocaleString()),
+                            React.createElement('div', { className: 'stat-label' }, 'Max Velocity CFM')
+                        ),
+                        React.createElement('div', { className: 'stat-card' },
+                            React.createElement('div', { className: 'stat-value' }, maxFrictionCFM.toLocaleString()),
+                            React.createElement('div', { className: 'stat-label' }, 'Max Friction CFM')
+                        ),
+                        React.createElement('div', { className: 'stat-card' },
+                            React.createElement('div', { className: 'stat-value' }, `${optimalDiameter}"`),
+                            React.createElement('div', { className: 'stat-label' }, 'Optimal Diameter')
+                        )
+                    ),
+                    
+                    React.createElement('div', { className: 'chart-container' },
+                        React.createElement(ResponsiveContainer, { width: '100%', height: '100%' },
+                            React.createElement(LineChart, { data: chartData },
+                                React.createElement(CartesianGrid, { strokeDasharray: '3 3' }),
+                                React.createElement(XAxis, { 
+                                    dataKey: 'diameter',
+                                    label: { value: 'Duct Diameter (inches)', position: 'insideBottom', offset: -10 }
+                                }),
+                                React.createElement(YAxis, {
+                                    label: { value: 'CFM', angle: -90, position: 'insideLeft' }
+                                }),
+                                React.createElement(Tooltip, {
+                                    formatter: (value, name) => [Number(value).toLocaleString(), name],
+                                    labelFormatter: (label) => `${label}" Diameter`
+                                }),
+                                React.createElement(Legend),
+                                React.createElement(Line, {
+                                    type: 'monotone',
+                                    dataKey: 'Velocity CFM',
+                                    stroke: '#3b82f6',
+                                    strokeWidth: 2,
+                                    dot: { fill: '#3b82f6', strokeWidth: 2, r: 4 }
+                                }),
+                                React.createElement(Line, {
+                                    type: 'monotone',
+                                    dataKey: 'Friction CFM',
+                                    stroke: '#dc2626',
+                                    strokeWidth: 2,
+                                    dot: { fill: '#dc2626', strokeWidth: 2, r: 4 }
+                                })
+                            )
+                        )
+                    ),
+                    
+                    React.createElement('div', { className: 'actions' },
+                        React.createElement('button', {
+                            className: 'btn btn-primary',
+                            onClick: exportToPDF
+                        }, '📄 Export PDF Report')
+                    ),
+                    
+                    React.createElement('table', { className: 'results-table' },
+                        React.createElement('thead', null,
+                            React.createElement('tr', null,
+                                React.createElement('th', null, 'Diameter'),
+                                React.createElement('th', null, 'Velocity CFM'),
+                                React.createElement('th', null, 'Friction CFM'),
+                                React.createElement('th', null, 'Difference')
+                            )
+                        ),
+                        React.createElement('tbody', null,
+                            cfmCalculations.slice(0, 15).map((calc, index) =>
+                                React.createElement('tr', { key: index },
+                                    React.createElement('td', null, `${calc.diameter}"`),
+                                    React.createElement('td', null, calc.velocityCFM.toLocaleString()),
+                                    React.createElement('td', null, calc.frictionCFM.toLocaleString()),
+                                    React.createElement('td', null, calc.difference.toLocaleString())
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+        }
+        
+        // Render the component
+        ReactDOM.render(React.createElement(HVACCalculator), document.getElementById('calculator-root'));
+    </script>
+</body>
+</html>
