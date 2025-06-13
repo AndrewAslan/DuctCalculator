@@ -215,11 +215,18 @@ export default function HVACCalculator() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/attached_assets/image_1749847822235.png" 
+              alt="PragmaticPE - Professional Engineers" 
+              className="h-12 w-auto"
+            />
+          </div>
+          <CardTitle className="flex items-center justify-center gap-2 text-center">
             <Calculator className="h-6 w-6" />
-            PragmaticPE Duct CFM Calculator
+            HVAC Duct CFM Calculator
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-center">
             Enter velocity and friction limits to see CFM calculations for all duct diameters
           </CardDescription>
         </CardHeader>
