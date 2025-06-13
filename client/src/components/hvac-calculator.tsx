@@ -216,11 +216,11 @@ export default function HVACCalculator() {
       <Card>
         <CardHeader>
           <div className="flex justify-center mb-4">
-            <img 
-              src="/attached_assets/image_1749847822235.png" 
-              alt="PragmaticPE - Professional Engineers" 
-              className="h-12 w-auto"
-            />
+            <div className="text-center">
+              <div className="text-xl font-bold text-gray-700 mb-1" style={{ fontFamily: 'Arial, sans-serif' }}>
+                pragmatic | <span className="text-orange-500">PROFESSIONAL ENGINEERS</span>
+              </div>
+            </div>
           </div>
           <CardTitle className="flex items-center justify-center gap-2 text-center">
             <Calculator className="h-6 w-6" />
