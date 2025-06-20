@@ -16,6 +16,22 @@ function Router() {
 }
 
 function App() {
+  // Check if running in embed mode
+  const isEmbedMode = new URLSearchParams(window.location.search).get('embed') === 'true';
+  
+  if (isEmbedMode) {
+    // Return minimal layout for embedding
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <div className="min-h-screen bg-white">
+            <Home />
+          </div>
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
