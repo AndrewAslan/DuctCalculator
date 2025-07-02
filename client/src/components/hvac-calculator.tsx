@@ -437,41 +437,35 @@ export default function HVACCalculator() {
               </Button>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-y-auto max-h-96">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-center font-semibold">
                       Duct Diameter (inches)
                     </TableHead>
-                    {ductDiameters.map(diameter => (
-                      <TableHead key={diameter} className="text-center min-w-[80px]">
-                        {diameter}"
-                      </TableHead>
-                    ))}
+                    <TableHead className="text-center font-semibold">
+                      Velocity CFM
+                    </TableHead>
+                    <TableHead className="text-center font-semibold">
+                      Friction CFM
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell className="font-semibold bg-muted/50">
-                      Velocity CFM
-                    </TableCell>
-                    {cfmCalculations.map(calc => (
-                      <TableCell key={calc.diameter} className="text-center font-mono">
+                  {cfmCalculations.map(calc => (
+                    <TableRow key={calc.diameter}>
+                      <TableCell className="text-center font-semibold bg-muted/50">
+                        {calc.diameter}"
+                      </TableCell>
+                      <TableCell className="text-center font-mono">
                         {calc.velocityCFM.toLocaleString()}
                       </TableCell>
-                    ))}
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-semibold bg-muted/50">
-                      Friction CFM
-                    </TableCell>
-                    {cfmCalculations.map(calc => (
-                      <TableCell key={calc.diameter} className="text-center font-mono">
+                      <TableCell className="text-center font-mono">
                         {calc.frictionCFM.toLocaleString()}
                       </TableCell>
-                    ))}
-                  </TableRow>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
