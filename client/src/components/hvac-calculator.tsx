@@ -257,7 +257,7 @@ export default function HVACCalculator() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="job-number">Number</Label>
+                <Label htmlFor="job-number">Project Number</Label>
                 <Input
                   id="job-number"
                   type="text"
@@ -272,8 +272,8 @@ export default function HVACCalculator() {
           <Separator />
 
           {/* Input Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="space-y-2">
+          <div className="flex justify-center gap-8">
+            <div className="space-y-2 flex flex-col items-center">
               <Label htmlFor="velocity-limit" className="flex items-center gap-2">
                 <Wind className="h-4 w-4" />
                 Velocity Limit (FPM)
@@ -290,7 +290,7 @@ export default function HVACCalculator() {
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-2 flex flex-col items-center">
               <Label htmlFor="friction-limit" className="flex items-center gap-2">
                 <Ruler className="h-4 w-4" />
                 Friction Limit (in w.g./100 ft)
