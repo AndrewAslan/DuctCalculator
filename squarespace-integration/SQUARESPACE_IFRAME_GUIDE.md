@@ -59,14 +59,14 @@ Before embedding in Squarespace, verify your calculator works:
   <iframe 
     src="YOUR_CALCULATOR_URL_HERE"
     width="100%" 
-    height="900"
+    height="1400"
     frameborder="0"
     scrolling="auto"
     style="
       border: none; 
       border-radius: 8px; 
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      min-height: 900px;
+      min-height: 1400px;
     ">
     <p>Your browser does not support iframes. <a href="YOUR_CALCULATOR_URL_HERE">Click here to access the calculator</a></p>
   </iframe>
@@ -109,8 +109,8 @@ Before embedding in Squarespace, verify your calculator works:
 <iframe 
   src="YOUR_URL_HERE"
   width="100%" 
-  height="1000"
-  style="border: none; min-height: 1000px;">
+  height="1600"
+  style="border: none; min-height: 1600px;">
 </iframe>
 ```
 
@@ -121,7 +121,7 @@ Before embedding in Squarespace, verify your calculator works:
   <iframe 
     src="YOUR_URL_HERE"
     width="100%" 
-    height="800"
+    height="1200"
     style="border: none; min-width: 800px;">
   </iframe>
 </div>
@@ -139,7 +139,7 @@ Before embedding in Squarespace, verify your calculator works:
   <iframe 
     src="YOUR_URL_HERE"
     width="100%" 
-    height="900"
+    height="1400"
     style="border: none; max-width: 1200px; margin: 0 auto; display: block;">
   </iframe>
 </div>
@@ -154,7 +154,7 @@ Before embedding in Squarespace, verify your calculator works:
   <iframe 
     src="YOUR_URL_HERE"
     width="100%" 
-    height="900"
+    height="1400"
     style="border: none; display: none;"
     onload="document.getElementById('loading').style.display='none'; this.style.display='block';">
   </iframe>
@@ -173,7 +173,7 @@ Before embedding in Squarespace, verify your calculator works:
   <iframe 
     src="YOUR_URL_HERE"
     width="100%" 
-    height="900"
+    height="1400"
     style="border: none; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);">
   </iframe>
 </div>
