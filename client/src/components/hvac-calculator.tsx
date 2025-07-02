@@ -215,37 +215,6 @@ export default function HVACCalculator() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <div className="flex justify-center mb-4">
-            <div className="flex items-start gap-4">
-              <div 
-                className="text-black font-light tracking-wide"
-                style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontSize: '28px',
-                  fontWeight: '300',
-                  marginTop: '-8px'
-                }}
-              >
-                pragmatic
-              </div>
-              <div 
-                className="w-1 bg-orange-500"
-                style={{ height: '60px' }}
-              ></div>
-              <div 
-                className="text-black font-normal tracking-wide"
-                style={{ 
-                  fontFamily: 'Arial, sans-serif', 
-                  fontSize: '20px',
-                  fontWeight: '400',
-                  lineHeight: '1.2'
-                }}
-              >
-                <div>PROFESSIONAL</div>
-                <div>ENGINEERS</div>
-              </div>
-            </div>
-          </div>
           <CardTitle className="flex items-center justify-center gap-2 text-center">
             <Calculator className="h-6 w-6" />
             HVAC Duct CFM Calculator
