@@ -45,7 +45,7 @@ export default function HVACCalculator() {
     });
   }, [ductDiameters, velocityLimit, frictionLimit]);
 
-  // Prepare chart data
+  // Prepare chart data - original format for line chart
   const chartData = useMemo(() => {
     return cfmCalculations.map(calc => ({
       diameter: calc.diameter,
@@ -317,9 +317,9 @@ export default function HVACCalculator() {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="h-5 w-5" />
-              <h3 className="text-lg font-semibold">CFM vs Duct Diameter</h3>
+              <h3 className="text-lg font-semibold">Duct Diameter vs CFM</h3>
             </div>
-            <div className="h-96 w-full">
+            <div className="h-[600px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 20, right: 30, left: 100, bottom: 120 }}>
                   <CartesianGrid strokeDasharray="3 3" />
