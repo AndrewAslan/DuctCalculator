@@ -319,9 +319,9 @@ export default function HVACCalculator() {
               <BarChart3 className="h-5 w-5" />
               <h3 className="text-lg font-semibold">Duct Diameter vs CFM</h3>
             </div>
-            <div className="h-[600px] w-full">
+            <div className="h-[800px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 100, bottom: 120 }}>
+                <LineChart data={chartData} margin={{ top: 20, right: 50, left: 120, bottom: 120 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis 
                     dataKey="diameter" 
@@ -331,8 +331,9 @@ export default function HVACCalculator() {
                       offset: -40,
                       dx: -30
                     }}
-                    tick={{ dy: 15 }}
+                    tick={{ dy: 15, fontSize: 12 }}
                     axisLine={{ stroke: '#374151' }}
+                    interval={0}
                   />
                   <YAxis 
                     label={{ 
@@ -340,8 +341,11 @@ export default function HVACCalculator() {
                       angle: -90, 
                       position: 'insideLeft',
                       style: { textAnchor: 'middle' },
-                      offset: -50
+                      offset: -70
                     }}
+                    tick={{ fontSize: 12 }}
+                    tickFormatter={(value) => (value / 1000).toFixed(0) + 'k'}
+                    domain={['dataMin', 'dataMax']}
                   />
                   <Tooltip 
                     formatter={(value, name) => [Number(value).toLocaleString(), name]}
