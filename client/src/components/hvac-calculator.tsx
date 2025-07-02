@@ -227,7 +227,7 @@ export default function HVACCalculator() {
           {/* Project Information */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Project Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="project-name">Project Name</Label>
                 <Input
@@ -255,6 +255,7 @@ export default function HVACCalculator() {
                   type="date"
                   value={projectDate}
                   onChange={(e) => setProjectDate(e.target.value)}
+                  className="max-w-[150px]"
                 />
               </div>
               <div className="space-y-2">
@@ -265,6 +266,7 @@ export default function HVACCalculator() {
                   value={jobNumber}
                   onChange={(e) => setJobNumber(e.target.value)}
                   placeholder="Enter job number"
+                  className="max-w-[120px]"
                 />
               </div>
             </div>
@@ -273,7 +275,7 @@ export default function HVACCalculator() {
           <Separator />
 
           {/* Input Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label htmlFor="velocity-limit" className="flex items-center gap-2">
                 <Wind className="h-4 w-4" />
@@ -287,7 +289,7 @@ export default function HVACCalculator() {
                 min="100"
                 max="5000"
                 step="50"
-                className={`text-center ${!isValidVelocity ? 'border-red-500' : ''}`}
+                className={`text-center max-w-[120px] ${!isValidVelocity ? 'border-red-500' : ''}`}
               />
             </div>
             
@@ -304,7 +306,7 @@ export default function HVACCalculator() {
                 min="0.01"
                 max="1.0"
                 step="0.01"
-                className={`text-center ${!isValidFriction ? 'border-red-500' : ''}`}
+                className={`text-center max-w-[120px] ${!isValidFriction ? 'border-red-500' : ''}`}
               />
             </div>
 
