@@ -235,7 +235,6 @@ export default function HVACCalculator() {
                   type="text"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  placeholder="Enter project name"
                 />
               </div>
               <div className="space-y-2">
@@ -245,7 +244,6 @@ export default function HVACCalculator() {
                   type="text"
                   value={engineerName}
                   onChange={(e) => setEngineerName(e.target.value)}
-                  placeholder="Enter engineer name"
                 />
               </div>
               <div className="space-y-2">
