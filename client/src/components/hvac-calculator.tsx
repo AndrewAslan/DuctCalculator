@@ -218,22 +218,22 @@ export default function HVACCalculator() {
           <CardDescription className="text-left max-w-4xl mx-auto">
             <div className="space-y-2">
               <p className="font-medium text-gray-700 mb-3">Professional HVAC Duct Sizing Calculator:</p>
-              <ul className="space-y-2 text-gray-600">
+              <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 font-bold mt-1">•</span>
-                  <span>Calculate optimal CFM (Cubic Feet per Minute) for round ductwork</span>
+                  <span>Calculate optimal CFM (Cubic Feet per Minute) airflow rates for round ductwork systems using industry-standard ASHRAE formulas and engineering principles</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 font-bold mt-1">•</span>
-                  <span>Enter your velocity limit (FPM) and friction loss limit (inches of water per 100 feet)</span>
+                  <span>Input your maximum velocity limit (feet per minute) and friction loss limit (inches of water column per 100 feet of duct) to establish design constraints</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 font-bold mt-1">•</span>
-                  <span>Get comprehensive sizing data for standard duct diameters from 4" to 60"</span>
+                  <span>Generate comprehensive sizing tables and interactive charts showing CFM capacity for all standard duct diameters from 4 inches to 60 inches in 2-inch increments</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-blue-500 font-bold mt-1">•</span>
-                  <span>Perfect for engineers, contractors, and HVAC professionals</span>
+                  <span>Export detailed PDF reports with project information, calculations, and data tables - ideal for engineers, contractors, and HVAC design professionals</span>
                 </li>
               </ul>
             </div>
