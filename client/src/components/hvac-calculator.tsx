@@ -318,7 +318,7 @@ export default function HVACCalculator() {
               <BarChart3 className="h-5 w-5" />
               <h3 className="text-lg font-semibold">Duct Diameter vs CFM</h3>
             </div>
-            <div className="h-[800px] w-full max-w-4xl mx-auto">
+            <div className="h-[800px] w-full max-w-[1400px] mx-auto">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 20, right: 50, left: 120, bottom: 120 }} compact>
                   <CartesianGrid strokeDasharray="3 3" />
