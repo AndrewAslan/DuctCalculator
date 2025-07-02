@@ -215,8 +215,28 @@ export default function HVACCalculator() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardDescription className="text-center max-w-3xl mx-auto">
-            This professional HVAC tool calculates optimal CFM (Cubic Feet per Minute) airflow for round ductwork based on your velocity and friction requirements. Simply enter your maximum velocity limit (FPM) and friction loss limit (inches of water per 100 feet), and the calculator will generate comprehensive sizing data for all standard duct diameters from 4" to 60". Perfect for engineers, contractors, and HVAC professionals designing efficient ductwork systems.
+          <CardDescription className="text-left max-w-4xl mx-auto">
+            <div className="space-y-2">
+              <p className="font-medium text-gray-700 mb-3">Professional HVAC Duct Sizing Calculator:</p>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 font-bold mt-1">•</span>
+                  <span>Calculate optimal CFM (Cubic Feet per Minute) for round ductwork</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 font-bold mt-1">•</span>
+                  <span>Enter your velocity limit (FPM) and friction loss limit (inches of water per 100 feet)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 font-bold mt-1">•</span>
+                  <span>Get comprehensive sizing data for standard duct diameters from 4" to 60"</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-500 font-bold mt-1">•</span>
+                  <span>Perfect for engineers, contractors, and HVAC professionals</span>
+                </li>
+              </ul>
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
