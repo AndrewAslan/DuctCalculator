@@ -263,7 +263,6 @@ export default function HVACCalculator() {
                   type="text"
                   value={jobNumber}
                   onChange={(e) => setJobNumber(e.target.value)}
-                  placeholder="Enter job number"
                   className="max-w-[120px]"
                 />
               </div>
