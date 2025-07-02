@@ -229,7 +229,7 @@ export default function HVACCalculator() {
             <h3 className="text-lg font-semibold mb-4">Project Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="project-name">Name</Label>
+                <Label htmlFor="project-name">Project Name</Label>
                 <Input
                   id="project-name"
                   type="text"
@@ -238,7 +238,7 @@ export default function HVACCalculator() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="engineer-name">By</Label>
+                <Label htmlFor="engineer-name">Engineer Name</Label>
                 <Input
                   id="engineer-name"
                   type="text"
