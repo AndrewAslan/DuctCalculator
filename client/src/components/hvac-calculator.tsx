@@ -215,10 +215,6 @@ export default function HVACCalculator() {
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-center gap-2 text-center">
-            <Calculator className="h-6 w-6" />
-            HVAC Duct CFM Calculator
-          </CardTitle>
           <CardDescription className="text-center max-w-3xl mx-auto">
             This professional HVAC tool calculates optimal CFM (Cubic Feet per Minute) airflow for round ductwork based on your velocity and friction requirements. Simply enter your maximum velocity limit (FPM) and friction loss limit (inches of water per 100 feet), and the calculator will generate comprehensive sizing data for all standard duct diameters from 4" to 60". Perfect for engineers, contractors, and HVAC professionals designing efficient ductwork systems.
           </CardDescription>
