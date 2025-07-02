@@ -344,8 +344,9 @@ export default function HVACCalculator() {
                       offset: -70
                     }}
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => (value / 1000).toFixed(0) + 'k'}
-                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={(value) => value.toLocaleString()}
+                    domain={[0, 60000]}
+                    ticks={[0, 10000, 20000, 30000, 40000, 50000, 60000]}
                   />
                   <Tooltip 
                     formatter={(value, name) => [Number(value).toLocaleString(), name]}
